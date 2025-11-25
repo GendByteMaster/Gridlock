@@ -1,10 +1,13 @@
 import React from 'react';
 import { useGameStore } from '../store/gameStore';
 import { getUnitIcon } from '../utils/unitUtils';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MoveHistory } from './MoveHistory';
+import { Activity, List } from 'lucide-react';
 
 export const PlayerPanel: React.FC = () => {
     const { gameStats, turn } = useGameStore();
+    const [activeTab, setActiveTab] = React.useState<'stats' | 'log'>('stats');
 
     // Safety check for gameStats
     if (!gameStats) return null;
@@ -44,55 +47,103 @@ export const PlayerPanel: React.FC = () => {
                         <span className="text-xs text-blue-300 font-semibold">{score} PTS</span>
                     </div>
                 </div>
+
+                {/* Tab Switcher */}
+                <div className="flex bg-white/5 p-1 rounded-lg mt-4 w-full z-10">
+                    <button
+                        onClick={() => setActiveTab('stats')}
+                        className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md text-xs font-bold transition-all ${activeTab === 'stats'
+                                ? 'bg-blue-500/20 text-blue-300 shadow-sm'
+                                : 'text-white/40 hover:text-white/60'
+                            }`}
+                    >
+                        <Activity size={14} />
+                        STATS
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('log')}
+                        className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md text-xs font-bold transition-all ${activeTab === 'log'
+                                ? 'bg-blue-500/20 text-blue-300 shadow-sm'
+                                : 'text-white/40 hover:text-white/60'
+                            }`}
+                    >
+                        <List size={14} />
+                        LOG
+                    </button>
+                </div>
             </div>
 
-            {/* Stats */}
-            <div className="space-y-8 flex-1 overflow-y-auto custom-scrollbar pr-2">
-                {/* Kills */}
-                <div>
-                    <div className="flex justify-between items-center mb-4 px-1">
-                        <h3 className="text-[11px] font-semibold text-white/40 uppercase tracking-widest">Eliminated Targets</h3>
-                        <span className="text-[10px] font-bold text-white/80 bg-white/10 px-2 py-0.5 rounded-full">{opponentKills.length}</span>
-                    </div>
+            {/* Content Area */}
+            <div className="flex-1 overflow-hidden relative">
+                <AnimatePresence mode="wait">
+                    {activeTab === 'stats' ? (
+                        <motion.div
+                            key="stats"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            transition={{ duration: 0.2 }}
+                            className="h-full overflow-y-auto custom-scrollbar pr-2"
+                        >
+                            {/* Kills */}
+                            <div className="mb-8">
+                                <div className="flex justify-between items-center mb-4 px-1">
+                                    <h3 className="text-[11px] font-semibold text-white/40 uppercase tracking-widest">Eliminated Targets</h3>
+                                    <span className="text-[10px] font-bold text-white/80 bg-white/10 px-2 py-0.5 rounded-full">{opponentKills.length}</span>
+                                </div>
 
-                    {opponentKills.length === 0 ? (
-                        <div className="bg-white/5 rounded-2xl p-8 border border-white/5 border-dashed flex flex-col items-center justify-center text-center group hover:bg-white/10 transition-colors cursor-default">
-                            <span className="text-3xl mb-3 opacity-20 grayscale group-hover:grayscale-0 transition-all">⚔️</span>
-                            <p className="text-xs text-white/30 font-medium">No eliminations yet</p>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-4 gap-3">
-                            {opponentKills.map((type, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ scale: 0, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    transition={{ delay: index * 0.05 }}
-                                    className="aspect-square bg-gradient-to-br from-red-500/10 to-red-600/5 rounded-xl flex items-center justify-center border border-red-500/10 hover:bg-red-500/20 transition-colors group relative cursor-help"
-                                    title={`Eliminated: ${type}`}
-                                >
-                                    <div className="text-red-400/80 group-hover:text-red-400 group-hover:scale-110 transition-all duration-300">
-                                        {getUnitIcon(type, 18)}
+                                {opponentKills.length === 0 ? (
+                                    <div className="bg-white/5 rounded-2xl p-8 border border-white/5 border-dashed flex flex-col items-center justify-center text-center group hover:bg-white/10 transition-colors cursor-default">
+                                        <span className="text-3xl mb-3 opacity-20 grayscale group-hover:grayscale-0 transition-all">⚔️</span>
+                                        <p className="text-xs text-white/30 font-medium">No eliminations yet</p>
                                     </div>
-                                </motion.div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                {/* Casualties */}
-                <div>
-                    <h3 className="text-[11px] font-semibold text-white/40 uppercase tracking-widest mb-3 px-1">Casualties</h3>
-                    <div className="bg-white/5 rounded-2xl p-4 border border-white/5 flex items-center justify-between hover:bg-white/10 transition-colors cursor-default">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center text-red-400">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                                ) : (
+                                    <div className="grid grid-cols-4 gap-3">
+                                        {opponentKills.map((type, index) => (
+                                            <motion.div
+                                                key={index}
+                                                initial={{ scale: 0, opacity: 0 }}
+                                                animate={{ scale: 1, opacity: 1 }}
+                                                transition={{ delay: index * 0.05 }}
+                                                className="aspect-square bg-gradient-to-br from-red-500/10 to-red-600/5 rounded-xl flex items-center justify-center border border-red-500/10 hover:bg-red-500/20 transition-colors group relative cursor-help"
+                                                title={`Eliminated: ${type}`}
+                                            >
+                                                <div className="text-red-400/80 group-hover:text-red-400 group-hover:scale-110 transition-all duration-300">
+                                                    {getUnitIcon(type, 18)}
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                            <span className="text-sm font-medium text-white/70">Units Lost</span>
-                        </div>
-                        <span className="text-xl font-bold text-white">{gameStats.playerUnitsLost}</span>
-                    </div>
-                </div>
+
+                            {/* Casualties */}
+                            <div>
+                                <h3 className="text-[11px] font-semibold text-white/40 uppercase tracking-widest mb-3 px-1">Casualties</h3>
+                                <div className="bg-white/5 rounded-2xl p-4 border border-white/5 flex items-center justify-between hover:bg-white/10 transition-colors cursor-default">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center text-red-400">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                                        </div>
+                                        <span className="text-sm font-medium text-white/70">Units Lost</span>
+                                    </div>
+                                    <span className="text-xl font-bold text-white">{gameStats.playerUnitsLost}</span>
+                                </div>
+                            </div>
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="log"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.2 }}
+                            className="h-full"
+                        >
+                            <MoveHistory />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             {/* Turn Indicator */}

@@ -125,6 +125,7 @@ export const useGameStore = create<ExtendedGameState>((set, get) => ({
     localPlayer: 'player',
     turnTimeRemaining: 60,
     turnTimeLimit: 60,
+    moveHistory: [],
 
     initializeGame: () => {
         set({
@@ -135,6 +136,7 @@ export const useGameStore = create<ExtendedGameState>((set, get) => ({
             validMoves: [],
             cursor: { x: 4, y: 9 },
             targetingSkillId: null,
+            moveHistory: [],
         });
 
         const { units, grid } = get();
@@ -284,6 +286,18 @@ export const useGameStore = create<ExtendedGameState>((set, get) => ({
             selectedUnitId: null,
             validMoves: [],
             turn: turn === 'player' ? 'opponent' : 'player',
+            moveHistory: [
+                ...get().moveHistory,
+                {
+                    turn: get().gameStats.turns + 1,
+                    player: turn,
+                    unitId,
+                    actionType: 'move',
+                    from: oldPos,
+                    to: target,
+                    timestamp: Date.now()
+                }
+            ]
         });
     },
 
@@ -379,7 +393,25 @@ export const useGameStore = create<ExtendedGameState>((set, get) => ({
             }
         }
 
-        set({ units, grid, gameStats });
+        set({
+            units,
+            grid,
+            gameStats,
+            moveHistory: [
+                ...get().moveHistory,
+                {
+                    turn: get().gameStats.turns + 1,
+                    player: unit.owner,
+                    unitId,
+                    actionType: 'skill',
+                    skillId,
+                    from: unit.position,
+                    to: target,
+                    targetId: grid[target.y][target.x].unitId,
+                    timestamp: Date.now()
+                }
+            ]
+        });
         get().endTurn();
     },
 
@@ -460,7 +492,8 @@ export const useGameStore = create<ExtendedGameState>((set, get) => ({
                 opponentUnitsLost: 0,
                 playerKills: [],
                 opponentKills: []
-            }
+            },
+            moveHistory: []
         });
 
         const { units, grid } = get();

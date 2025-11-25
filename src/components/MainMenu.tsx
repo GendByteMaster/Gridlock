@@ -1,12 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Play, Settings, Info } from 'lucide-react';
+import { Play, Settings, Info, BookOpen } from 'lucide-react';
 
 interface MainMenuProps {
     onPlay: () => void;
+    onHowToPlay: () => void;
 }
 
-const MainMenu: React.FC<MainMenuProps> = ({ onPlay }) => {
+const MainMenu: React.FC<MainMenuProps> = ({ onPlay, onHowToPlay }) => {
     return (
         <div className="h-screen w-full flex items-center justify-center p-4 overflow-hidden">
             {/* Animated background grid - Made subtle for new theme */}
@@ -76,6 +77,20 @@ const MainMenu: React.FC<MainMenuProps> = ({ onPlay }) => {
                         whileHover={{ scale: 1.02, x: 4 }}
                         whileTap={{ scale: 0.98 }}
                         style={{ willChange: 'transform' }}
+                        onClick={onHowToPlay}
+                        className="w-full py-4 bg-gray-900/40 hover:bg-gray-800/60 backdrop-blur-xl border border-white/10 text-white font-medium text-lg rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 hover:border-white/20"
+                    >
+                        <BookOpen size={20} className="text-white/60 group-hover:text-white" />
+                        How to Play
+                    </motion.button>
+
+                    <motion.button
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.9 }}
+                        whileHover={{ scale: 1.02, x: 4 }}
+                        whileTap={{ scale: 0.98 }}
+                        style={{ willChange: 'transform' }}
                         className="w-full py-4 bg-gray-900/40 hover:bg-gray-800/60 backdrop-blur-xl border border-white/10 text-white font-medium text-lg rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 hover:border-white/20"
                     >
                         <Settings size={20} className="text-white/60 group-hover:text-white" />
@@ -85,7 +100,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ onPlay }) => {
                     <motion.button
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.9 }}
+                        transition={{ delay: 1.0 }}
                         whileHover={{ scale: 1.02, x: 4 }}
                         whileTap={{ scale: 0.98 }}
                         style={{ willChange: 'transform' }}

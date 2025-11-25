@@ -68,4 +68,17 @@ export interface GameState {
     initializeGame: () => void;
     moveCursor: (dx: number, dy: number) => void;
     setCursor: (pos: Position) => void;
+    moveHistory: Move[];
+}
+
+export interface Move {
+    turn: number;
+    player: Player;
+    unitId: string;
+    actionType: 'move' | 'skill';
+    skillId?: string;
+    from: Position;
+    to: Position;
+    targetId?: string;
+    timestamp: number;
 }

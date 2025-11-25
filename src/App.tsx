@@ -11,10 +11,11 @@ import TopBar from './components/TopBar';
 import SkillBar from './components/SkillBar';
 import { UnitInfoPanel } from './components/UnitInfoPanel';
 import { PlayerPanel } from './components/PlayerPanel';
+import HowToPlay from './components/HowToPlay';
 import { clsx } from 'clsx';
 import './index.css';
 
-type Screen = 'menu' | 'hub' | 'battle-local' | 'battle-online' | 'skill-tree' | 'roster';
+type Screen = 'menu' | 'hub' | 'battle-local' | 'battle-online' | 'skill-tree' | 'roster' | 'how-to-play';
 
 function App() {
     const { turn, executeAITurn, gameStatus, gameStats, resetGame } = useGameStore();
@@ -33,7 +34,12 @@ function App() {
 
     // Main Menu
     if (currentScreen === 'menu') {
-        return <MainMenu onPlay={() => setCurrentScreen('hub')} />;
+        return <MainMenu onPlay={() => setCurrentScreen('hub')} onHowToPlay={() => setCurrentScreen('how-to-play')} />;
+    }
+
+    // How to Play
+    if (currentScreen === 'how-to-play') {
+        return <HowToPlay onBack={() => setCurrentScreen('menu')} />;
     }
 
     // Hub
