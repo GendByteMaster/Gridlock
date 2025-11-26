@@ -3,15 +3,25 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
 import { UNIT_DATA } from '../data/unitData';
 import { getUnitIcon } from '../utils/unitUtils';
+import { SKILL_REGISTRY } from '../combat/skills/SkillRegistry';
+
+import { toEngineUnit } from '../combat/adapter/CombatStateAdapter';
 
 export const UnitInfoPanel: React.FC = () => {
     const { selectedUnitId, units } = useGameStore();
-    const selectedUnit = units.find(u => u.id === selectedUnitId);
+    const rawUnit = units.find(u => u.id === selectedUnitId);
+
+    if (!rawUnit) return null;
+
+    // Adapt to engine unit format
+    const selectedUnit = toEngineUnit(rawUnit as any);
 
     if (!selectedUnit) return null;
 
     const data = UNIT_DATA[selectedUnit.type];
     if (!data) return null;
+
+    const { hp, maxHp } = selectedUnit.stats;
 
     return (
         <AnimatePresence>
@@ -56,16 +66,16 @@ export const UnitInfoPanel: React.FC = () => {
                     <div>
                         <div className="flex justify-between text-xs font-bold text-white/60 mb-2 uppercase tracking-wide px-1">
                             <span>Health Status</span>
-                            <span className={selectedUnit.hp < selectedUnit.maxHp * 0.3 ? 'text-red-400' : 'text-white'}>
-                                {selectedUnit.hp} / {selectedUnit.maxHp}
+                            <span className={hp < maxHp * 0.3 ? 'text-red-400' : 'text-white'}>
+                                {hp} / {maxHp}
                             </span>
                         </div>
                         <div className="w-full h-2.5 bg-gray-800/50 rounded-full overflow-hidden ring-1 ring-white/5 p-[1px]">
                             <motion.div
                                 initial={{ width: 0 }}
-                                animate={{ width: `${(selectedUnit.hp / selectedUnit.maxHp) * 100}%` }}
+                                animate={{ width: `${(hp / maxHp) * 100}%` }}
                                 transition={{ duration: 0.5, ease: "easeOut" }}
-                                className={`h-full rounded-full transition-colors duration-300 ${selectedUnit.hp < selectedUnit.maxHp * 0.3 ? 'bg-gradient-to-r from-red-500 to-red-600' : 'bg-gradient-to-r from-green-400 to-emerald-500'
+                                className={`h-full rounded-full transition-colors duration-300 ${hp < maxHp * 0.3 ? 'bg-gradient-to-r from-red-500 to-red-600' : 'bg-gradient-to-r from-green-400 to-emerald-500'
                                     }`}
                             />
                         </div>
@@ -106,26 +116,31 @@ export const UnitInfoPanel: React.FC = () => {
                 <div>
                     <h3 className="text-[11px] font-semibold text-white/40 uppercase tracking-widest mb-3 px-1">Active Skills</h3>
                     <div className="space-y-3">
-                        {selectedUnit.equippedSkills.map((skill, index) => (
-                            <motion.div
-                                key={skill.id}
-                                whileHover={{ x: 4 }}
-                                className="bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-colors group cursor-pointer"
-                            >
-                                <div className="flex justify-between items-start mb-2">
-                                    <div className="flex items-center gap-3">
-                                        <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-white/10 text-[10px] font-bold text-white/60 border border-white/5 group-hover:bg-blue-500/20 group-hover:text-blue-300 group-hover:border-blue-500/20 transition-all">
-                                            {index + 1}
+                        {selectedUnit.skills.map((skillId, index) => {
+                            const skill = SKILL_REGISTRY[skillId];
+                            if (!skill) return null;
+
+                            return (
+                                <motion.div
+                                    key={skill.id}
+                                    whileHover={{ x: 4 }}
+                                    className="bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-colors group cursor-pointer"
+                                >
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="flex items-center gap-3">
+                                            <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-white/10 text-[10px] font-bold text-white/60 border border-white/5 group-hover:bg-blue-500/20 group-hover:text-blue-300 group-hover:border-blue-500/20 transition-all">
+                                                {index + 1}
+                                            </span>
+                                            <span className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors">{skill.name}</span>
+                                        </div>
+                                        <span className="text-[10px] font-bold text-white/40 bg-white/5 px-2 py-1 rounded-full border border-white/5">
+                                            {skill.cooldown}T CD
                                         </span>
-                                        <span className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors">{skill.name}</span>
                                     </div>
-                                    <span className="text-[10px] font-bold text-white/40 bg-white/5 px-2 py-1 rounded-full border border-white/5">
-                                        {skill.cooldown}T CD
-                                    </span>
-                                </div>
-                                <p className="text-xs text-white/60 leading-relaxed pl-9">{skill.description}</p>
-                            </motion.div>
-                        ))}
+                                    <p className="text-xs text-white/60 leading-relaxed pl-9">{skill.description}</p>
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 </div>
             </motion.div>

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Unit as UnitType } from '../types';
+import { Unit as UnitType } from '../combat/types';
 import { getUnitIcon } from '../utils/unitUtils';
 import { clsx } from 'clsx';
+import { useGameStore } from '../store/gameStore';
 
 interface UnitProps {
     unit: UnitType;
@@ -12,20 +13,20 @@ interface UnitProps {
 
 const Unit: React.FC<UnitProps> = ({ unit, isSelected, onClick }) => {
     const isPlayer = unit.owner === 'player';
-    const [prevHp, setPrevHp] = useState(unit.hp);
+    const [prevHp, setPrevHp] = useState(unit.stats.hp);
     const [damagePopup, setDamagePopup] = useState<{ value: number, id: number } | null>(null);
+    const { targetingSkillId, validMoves } = useGameStore();
 
     useEffect(() => {
-        if (unit.hp < prevHp) {
-            const damage = prevHp - unit.hp;
+        if (unit.stats.hp < prevHp) {
+            const damage = prevHp - unit.stats.hp;
             setDamagePopup({ value: damage, id: Date.now() });
         }
-        setPrevHp(unit.hp);
-    }, [unit.hp]);
+        setPrevHp(unit.stats.hp);
+    }, [unit.stats.hp]);
 
-
-
-    const hpPercentage = (unit.hp / unit.maxHp) * 100;
+    const hpPercentage = (unit.stats.hp / unit.stats.maxHp) * 100;
+    const isTarget = targetingSkillId && validMoves.some(p => p.x === unit.pos.x && p.y === unit.pos.y);
 
     return (
         <motion.div
@@ -51,6 +52,15 @@ const Unit: React.FC<UnitProps> = ({ unit, isSelected, onClick }) => {
                     layoutId="selection-ring"
                     className="absolute inset-0 rounded-full border-2 border-white shadow-[0_0_15px_rgba(255,255,255,0.5)]"
                     transition={{ duration: 0.2 }}
+                />
+            )}
+
+            {/* Target Indicator */}
+            {isTarget && (
+                <motion.div
+                    className="absolute inset-0 rounded-full border-2 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]"
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ repeat: Infinity, duration: 1 }}
                 />
             )}
 

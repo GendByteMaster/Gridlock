@@ -7,9 +7,15 @@ export type UnitType =
     // Basic Units
     | 'Guardian' | 'Scout' | 'Striker' | 'Arcanist' | 'Vanguard'
     | 'Sentinel' | 'Mechanist' | 'Monk' | 'FrostAdept' | 'WarImp'
+    | 'Coreframe' | 'Phantom' | 'Fabricator' | 'Bastion' | 'Weaver'
+    | 'Spectre' | 'Ronin' | 'Juggernaut' | 'Medic' | 'Sniper'
+    | 'Engineer' | 'Summoner' | 'Assassin' | 'Templar' | 'Dragoon'
+    | 'Valkyrie' | 'Overlord' | 'Titan' | 'Bomber'
     // Unique Units
     | 'ChronoKnight' | 'StormTitan' | 'ShadowDancer' | 'SolarPriest' | 'VoidWalker'
-    | 'IronColossus' | 'ArcaneArcher' | 'BoneReaper' | 'EmberWitch' | 'AstralSentinel';
+    | 'IronColossus' | 'ArcaneArcher' | 'BoneReaper' | 'EmberWitch' | 'AstralSentinel'
+    // Summoned Units
+    | 'Turret';
 
 export type Player = 'player' | 'opponent';
 

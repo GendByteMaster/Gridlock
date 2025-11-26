@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { clsx } from 'clsx';
-import { Sword, Move, Shield } from 'lucide-react';
+import {
+    Sword, Move, Shield, Zap, Crosshair, Heart, RefreshCw,
+    Anchor, Ghost, Flame, Snowflake, Skull, Star, Activity
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundManager } from '../utils/SoundManager';
+import { SKILL_REGISTRY } from '../combat/skills/SkillRegistry';
+
+import { toEngineUnit } from '../combat/adapter/CombatStateAdapter';
 
 const SkillBar: React.FC = () => {
     const { selectedUnitId, units, targetingSkillId, setTargetingMode } = useGameStore();
@@ -11,14 +17,40 @@ const SkillBar: React.FC = () => {
 
     if (!selectedUnitId) return null;
 
-    const unit = units.find(u => u.id === selectedUnitId);
-    if (!unit) return null;
+    const rawUnit = units.find(u => u.id === selectedUnitId);
+    if (!rawUnit) return null;
 
-    const getIcon = (category: string) => {
+    // Adapt to engine unit format
+    const unit = toEngineUnit(rawUnit as any);
+
+    const getCategoryFromTags = (tags: string[] = []): string => {
+        if (tags.includes('ultimate')) return 'Ultimate';
+        if (tags.includes('mobility')) return 'Mobility';
+        if (tags.includes('support') || tags.includes('healing')) return 'Support';
+        if (tags.includes('control')) return 'Control';
+        if (tags.includes('offensive')) return 'Offense';
+        return 'Offense';
+    };
+
+    const getIcon = (skill: any) => {
+        const tags = skill.tags || [];
+        const category = getCategoryFromTags(tags);
+        const name = skill.name.toLowerCase();
+
+        if (name.includes('turret')) return <Anchor size={20} />;
+        if (name.includes('repair') || name.includes('heal')) return <Heart size={20} />;
+        if (name.includes('fire')) return <Flame size={20} />;
+        if (name.includes('frost') || name.includes('ice')) return <Snowflake size={20} />;
+        if (name.includes('lightning') || name.includes('thunder')) return <Zap size={20} />;
+        if (name.includes('shot') || name.includes('arrow')) return <Crosshair size={20} />;
+        if (name.includes('ghost') || name.includes('shadow')) return <Ghost size={20} />;
+        if (name.includes('death') || name.includes('soul')) return <Skull size={20} />;
+
         switch (category) {
-            case 'Offense': return <Sword size={20} />;
             case 'Mobility': return <Move size={20} />;
-            case 'Control': return <Shield size={20} />;
+            case 'Control': return <Activity size={20} />;
+            case 'Support': return <RefreshCw size={20} />;
+            case 'Ultimate': return <Star size={20} />;
             default: return <Sword size={20} />;
         }
     };
@@ -28,17 +60,23 @@ const SkillBar: React.FC = () => {
             case 'Offense': return 'text-accent-red';
             case 'Mobility': return 'text-accent-blue';
             case 'Control': return 'text-accent-purple';
+            case 'Support': return 'text-accent-green';
+            case 'Ultimate': return 'text-accent-gold';
             default: return 'text-white';
         }
     };
 
     return (
         <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-4 p-3 bg-gray-900/90 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl z-[100]">
-            {unit.equippedSkills.map((skill, index) => {
+            {unit.skills.map((skillId, index) => {
+                const skill = SKILL_REGISTRY[skillId];
+                if (!skill) return null;
+
                 const isSelected = targetingSkillId === skill.id;
-                const cooldown = unit.cooldowns[skill.id] || 0;
+                const cooldown = unit.runtime.cooldowns[skill.id] || 0;
                 const isOnCooldown = cooldown > 0;
-                const colorClass = getCategoryColor(skill.category);
+                const category = getCategoryFromTags(skill.tags);
+                const colorClass = getCategoryColor(category);
 
                 return (
                     <div key={skill.id} className="relative group">
@@ -65,8 +103,8 @@ const SkillBar: React.FC = () => {
                                 isOnCooldown && "opacity-50 cursor-not-allowed grayscale"
                             )}
                         >
-                            <div className={clsx("mb-1 transition-colors", isSelected ? "text-accent-blue" : "text-gray-300 group-hover:text-white")}>
-                                {getIcon(skill.category)}
+                            <div className={clsx("mb-1 transition-colors", isSelected ? "text-accent-blue" : colorClass)}>
+                                {getIcon(skill)}
                             </div>
                             <span className={clsx("text-[10px] font-bold uppercase tracking-wider", isSelected ? "text-accent-blue" : "text-gray-400")}>
                                 {skill.name}
@@ -97,18 +135,16 @@ const SkillBar: React.FC = () => {
                                 >
                                     <div className="flex items-center justify-between mb-1">
                                         <span className={clsx("font-bold text-sm", colorClass)}>{skill.name}</span>
-                                        <span className="text-[10px] text-gray-500 uppercase">{skill.category}</span>
+                                        <span className="text-[10px] text-gray-500 uppercase">{category}</span>
                                     </div>
                                     <p className="text-xs text-gray-400 leading-relaxed mb-2">{skill.description}</p>
                                     <div className="flex items-center gap-3 text-[10px] text-gray-500 border-t border-white/5 pt-2">
                                         <div className="flex items-center gap-1">
                                             <span className="font-bold text-gray-300">CD:</span> {skill.cooldown}
                                         </div>
-                                        {skill.damage && (
-                                            <div className="flex items-center gap-1">
-                                                <span className="font-bold text-gray-300">DMG:</span> {skill.damage}
-                                            </div>
-                                        )}
+                                        <div className="flex items-center gap-1">
+                                            <span className="font-bold text-gray-300">Cost:</span> {skill.cost} AP
+                                        </div>
                                     </div>
 
                                     {/* Arrow */}

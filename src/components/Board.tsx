@@ -146,14 +146,27 @@ const Board: React.FC = () => {
                                 }}
                             >
                                 <AnimatePresence mode="wait">
-                                    {unit && (
-                                        <Unit
-                                            key={unit.id}
-                                            unit={unit}
-                                            isSelected={selectedUnitId === unit.id}
-                                            onClick={() => handleUnitClick(unit.id)}
-                                        />
-                                    )}
+                                    {unit && (() => {
+                                        // Adapter: Convert old Unit format to new format
+                                        const adaptedUnit = {
+                                            ...unit,
+                                            pos: unit.position,
+                                            base: { hp: unit.maxHp, maxHp: unit.maxHp, atk: 0, def: 0, res: 0, spd: 0, crit: 0, critDmg: 0, acc: 0, eva: 0 },
+                                            stats: { hp: unit.hp, maxHp: unit.maxHp, atk: 0, def: 0, res: 0, spd: 0, crit: 0, critDmg: 0, acc: 0, eva: 0, shield: 0 },
+                                            statuses: [],
+                                            skills: unit.equippedSkills.map(s => s.id),
+                                            modules: [],
+                                            runtime: { actionsTaken: 0, lastAction: null, hasMoved: false, hasActed: false }
+                                        };
+                                        return (
+                                            <Unit
+                                                key={unit.id}
+                                                unit={adaptedUnit as any}
+                                                isSelected={selectedUnitId === unit.id}
+                                                onClick={() => handleUnitClick(unit.id)}
+                                            />
+                                        );
+                                    })()}
                                 </AnimatePresence>
                             </Cell>
                         );

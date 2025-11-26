@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { GameState, Cell, Unit, Position, SkillSequence, UnitType } from '../types';
 import { SKILLS } from '../data/skills';
 import { executeAITurn as executeAITurnLogic } from '../ai/opponentAI';
+import { calculateUnitMoves } from '../combat/movement/UnitMovementRegistry';
 
 const BOARD_SIZE = 10;
 
@@ -91,6 +92,8 @@ interface ExtendedGameState extends GameState {
     localPlayer: 'player' | 'opponent';
     turnTimeRemaining: number;
     turnTimeLimit: number;
+    turnOrder: string[];
+    activeUnitId: string | null;
     moveCursor: (dx: number, dy: number) => void;
     setCursor: (pos: Position) => void;
     executeSkill: (unitId: string, skillId: string, target: Position) => void;
@@ -125,6 +128,8 @@ export const useGameStore = create<ExtendedGameState>((set, get) => ({
     localPlayer: 'player',
     turnTimeRemaining: 60,
     turnTimeLimit: 60,
+    turnOrder: [],
+    activeUnitId: null,
     moveHistory: [],
 
     initializeGame: () => {
@@ -137,6 +142,8 @@ export const useGameStore = create<ExtendedGameState>((set, get) => ({
             cursor: { x: 4, y: 9 },
             targetingSkillId: null,
             moveHistory: [],
+            turnOrder: [],
+            activeUnitId: null,
         });
 
         const { units, grid } = get();
@@ -222,7 +229,7 @@ export const useGameStore = create<ExtendedGameState>((set, get) => ({
     selectUnit: (unitId: string) => {
         set({ targetingSkillId: null });
 
-        const { units, turn } = get();
+        const { units, turn, grid } = get();
         const unit = units.find(u => u.id === unitId);
 
         if (!unit || unit.owner !== turn) {
@@ -230,23 +237,8 @@ export const useGameStore = create<ExtendedGameState>((set, get) => ({
             return;
         }
 
-        const validMoves: Position[] = [];
-        const { x, y } = unit.position;
-        const directions = [
-            { dx: 0, dy: 1 }, { dx: 0, dy: -1 },
-            { dx: 1, dy: 0 }, { dx: -1, dy: 0 }
-        ];
-
-        directions.forEach(({ dx, dy }) => {
-            const nx = x + dx;
-            const ny = y + dy;
-            if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE) {
-                const targetCell = get().grid[ny][nx];
-                if (!targetCell.isOccupied) {
-                    validMoves.push({ x: nx, y: ny });
-                }
-            }
-        });
+        // Use new movement system with unit-specific patterns
+        const validMoves = calculateUnitMoves(unit.type, unit.position, units, grid);
 
         set({ selectedUnitId: unitId, validMoves });
     },
