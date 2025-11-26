@@ -41,8 +41,6 @@ export const toEngineUnit = (uiUnit: UIUnit): EngineUnit => {
         frost: 0,
         lightning: 0,
         poison: 0,
-        physical: 0,
-        magical: 0,
         arcane: 0,
         void: 0
     };

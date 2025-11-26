@@ -72,7 +72,7 @@ export function calculateOrthogonalMoves(
     from: Position,
     range: number,
     units: any[],
-    grid: any[][],
+    _grid: any[][],
     canPassThrough: PassThroughType = 'none'
 ): Position[] {
     const moves: Position[] = [];
@@ -111,7 +111,7 @@ export function calculateDiagonalMoves(
     from: Position,
     range: number,
     units: any[],
-    grid: any[][],
+    _grid: any[][],
     canPassThrough: PassThroughType = 'none'
 ): Position[] {
     const moves: Position[] = [];
@@ -149,7 +149,7 @@ export function calculateDiagonalMoves(
 export function calculateKnightMoves(
     from: Position,
     units: any[],
-    grid: any[][]
+    _grid: any[][]
 ): Position[] {
     const moves: Position[] = [];
     const offsets = [

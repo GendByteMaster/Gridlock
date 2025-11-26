@@ -379,13 +379,14 @@ export const SKILL_REGISTRY: Record<string, Skill> = {
     },
 
     // ========================================================================
-    // COMBO SKILLS
+    // HERO SKILLS (UNIQUE)
     // ========================================================================
 
-    execute: {
-        id: 'execute',
-        name: 'Execute',
-        description: 'Massive damage to low HP enemies',
+    // 1. CHRONO KNIGHT
+    chrono_strike: {
+        id: 'chrono_strike',
+        name: 'Chrono Strike',
+        description: 'Strike and freeze enemy in time for 1 round',
         cost: 2,
         cooldown: 3,
         targeting: {
@@ -394,22 +395,17 @@ export const SKILL_REGISTRY: Record<string, Skill> = {
             filter: 'enemy'
         },
         ops: [
-            {
-                type: 'damage',
-                power: 2.0,
-                damageType: 'physical',
-                modifiers: [
-                    { condition: 'low_hp', multiplier: 2.0, threshold: 0.3 }
-                ]
-            }
+            { type: 'damage', power: 1.2, damageType: 'physical' },
+            { type: 'applyStatus', statusId: 'freeze', duration: 1 }
         ],
-        tags: ['offensive', 'melee', 'combo']
+        tags: ['offensive', 'control', 'chrono']
     },
 
-    backstab: {
-        id: 'backstab',
-        name: 'Backstab',
-        description: 'Critical strike from behind',
+    // 2. STORM TITAN
+    titan_strike: {
+        id: 'titan_strike',
+        name: 'Titan Strike',
+        description: 'Melee strike that chains lightning to nearby enemies',
         cost: 2,
         cooldown: 2,
         targeting: {
@@ -418,107 +414,201 @@ export const SKILL_REGISTRY: Record<string, Skill> = {
             filter: 'enemy'
         },
         ops: [
-            {
-                type: 'damage',
-                power: 1.5,
-                damageType: 'physical',
-                modifiers: [
-                    { condition: 'from_behind', multiplier: 2.5 }
-                ]
-            }
+            { type: 'damage', power: 1.0, damageType: 'lightning' },
+            { type: 'chain', maxBounces: 2, damageReduction: 0.5, range: 2 }
         ],
-        tags: ['offensive', 'melee', 'combo']
+        tags: ['offensive', 'lightning', 'chain']
     },
 
-    shatter: {
-        id: 'shatter',
-        name: 'Shatter',
-        description: 'Massive damage to frozen enemies',
+    // 3. SHADOW DANCER
+    shadow_swap: {
+        id: 'shadow_swap',
+        name: 'Shadow Swap',
+        description: 'Swap places with an ally',
+        cost: 1,
+        cooldown: 3,
+        targeting: {
+            type: 'single',
+            range: 2,
+            filter: 'ally'
+        },
+        ops: [
+            { type: 'swap' }
+        ],
+        tags: ['mobility', 'utility']
+    },
+
+    // 4. SOLAR PRIEST
+    solar_beam: {
+        id: 'solar_beam',
+        name: 'Solar Beam',
+        description: 'Fire a beam of holy light in a line',
+        cost: 3,
+        cooldown: 3,
+        targeting: {
+            type: 'line',
+            range: 5,
+            width: 1,
+            filter: 'enemy'
+        },
+        ops: [
+            { type: 'line', length: 5, piercing: true },
+            { type: 'damage', power: 1.5, damageType: 'fire' } // Using fire as holy proxy
+        ],
+        tags: ['offensive', 'line', 'holy']
+    },
+
+    // 5. VOID WALKER
+    void_warp: {
+        id: 'void_warp',
+        name: 'Void Warp',
+        description: 'Long range teleport',
         cost: 2,
         cooldown: 3,
+        targeting: {
+            type: 'single',
+            range: 6,
+            filter: 'empty'
+        },
+        ops: [
+            { type: 'teleport', range: 6 }
+        ],
+        tags: ['mobility', 'teleport']
+    },
+
+    void_strike: {
+        id: 'void_strike',
+        name: 'Void Strike',
+        description: 'Pull enemy closer and strike',
+        cost: 2,
+        cooldown: 2,
+        targeting: {
+            type: 'single',
+            range: 2,
+            filter: 'enemy'
+        },
+        ops: [
+            { type: 'pull', distance: 1 },
+            { type: 'damage', power: 1.2, damageType: 'void' }
+        ],
+        tags: ['offensive', 'control', 'void']
+    },
+
+    // 6. IRON COLOSSUS
+    colossus_smash: {
+        id: 'colossus_smash',
+        name: 'Colossus Smash',
+        description: 'Heavy strike that pushes enemies',
+        cost: 2,
+        cooldown: 2,
         targeting: {
             type: 'single',
             range: 1,
             filter: 'enemy'
         },
         ops: [
-            {
-                type: 'damage',
-                power: 1.2,
-                damageType: 'physical',
-                modifiers: [
-                    { condition: 'frozen', multiplier: 3.0 }
-                ]
-            },
-            { type: 'cleanse', statusType: 'control', count: 1 }
+            { type: 'damage', power: 1.5, damageType: 'physical' },
+            { type: 'push', distance: 1 }
         ],
-        tags: ['offensive', 'melee', 'combo', 'frost']
+        tags: ['offensive', 'control', 'melee']
     },
 
-    // ========================================================================
-    // ULTIMATE ABILITIES
-    // ========================================================================
-
-    time_stop: {
-        id: 'time_stop',
-        name: 'Time Stop',
-        description: 'Freeze all enemies in time',
-        cost: 5,
-        cooldown: 10,
+    // 7. ARCANE ARCHER
+    arcane_shot: {
+        id: 'arcane_shot',
+        name: 'Arcane Shot',
+        description: 'Long range magic arrow',
+        cost: 2,
+        cooldown: 0,
         targeting: {
-            type: 'aoe',
-            range: 0,
-            radius: 999,
+            type: 'single',
+            range: 5,
             filter: 'enemy'
         },
         ops: [
-            { type: 'aoe', radius: 999, center: 'source' },
-            { type: 'applyStatus', statusId: 'stun', duration: 2 }
+            { type: 'damage', power: 1.0, damageType: 'arcane' }
         ],
-        tags: ['ultimate', 'control', 'aoe'],
-        actionDelay: 30
+        tags: ['offensive', 'ranged', 'arcane']
     },
 
-    divine_intervention: {
-        id: 'divine_intervention',
-        name: 'Divine Intervention',
-        description: 'Heal and cleanse all allies',
-        cost: 4,
-        cooldown: 8,
+    piercing_shot: {
+        id: 'piercing_shot',
+        name: 'Piercing Shot',
+        description: 'Arrow that pierces through enemies',
+        cost: 3,
+        cooldown: 3,
         targeting: {
-            type: 'aoe',
-            range: 0,
-            radius: 999,
-            filter: 'ally'
-        },
-        ops: [
-            { type: 'aoe', radius: 999, center: 'source' },
-            { type: 'heal', amount: 0.5, isFlat: false },
-            { type: 'cleanse' }
-        ],
-        tags: ['ultimate', 'support', 'healing', 'aoe']
-    },
-
-    apocalypse: {
-        id: 'apocalypse',
-        name: 'Apocalypse',
-        description: 'Devastate the entire battlefield',
-        cost: 5,
-        cooldown: 12,
-        targeting: {
-            type: 'aoe',
-            range: 0,
-            radius: 999,
+            type: 'line',
+            range: 5,
+            width: 1,
             filter: 'enemy'
         },
         ops: [
-            { type: 'aoe', radius: 999, center: 'source' },
-            { type: 'damage', power: 2.0, damageType: 'magical' },
-            { type: 'applyStatus', statusId: 'burn', duration: 3, stacks: 3, value: 20 },
-            { type: 'applyStatus', statusId: 'curse', duration: 3 }
+            { type: 'line', length: 5, piercing: true },
+            { type: 'damage', power: 1.2, damageType: 'arcane' }
         ],
-        tags: ['ultimate', 'offensive', 'aoe'],
-        actionDelay: 40
+        tags: ['offensive', 'line', 'arcane']
+    },
+
+    // 8. BONE REAPER
+    scythe_sweep: {
+        id: 'scythe_sweep',
+        name: 'Scythe Sweep',
+        description: 'Sweep attack hitting multiple enemies',
+        cost: 2,
+        cooldown: 2,
+        targeting: {
+            type: 'cone',
+            range: 1,
+            angle: 180, // Wide sweep
+            filter: 'enemy'
+        },
+        ops: [
+            { type: 'cone', length: 1, angle: 180 },
+            { type: 'damage', power: 1.2, damageType: 'physical' }
+        ],
+        tags: ['offensive', 'aoe', 'melee']
+    },
+
+    // 9. EMBER WITCH
+    magma_ball: {
+        id: 'magma_ball',
+        name: 'Magma Ball',
+        description: 'Fireball that leaves burning ground',
+        cost: 3,
+        cooldown: 3,
+        targeting: {
+            type: 'aoe',
+            range: 4,
+            radius: 1,
+            filter: 'any'
+        },
+        ops: [
+            { type: 'aoe', radius: 1, center: 'target' },
+            { type: 'damage', power: 1.2, damageType: 'fire' },
+            { type: 'applyStatus', statusId: 'burning_ground', duration: 2 } // Needs status def
+        ],
+        tags: ['offensive', 'aoe', 'fire']
+    },
+
+    // 10. ASTRAL SENTINEL
+    astral_pulse: {
+        id: 'astral_pulse',
+        name: 'Astral Pulse',
+        description: 'Energy pulse in a short line',
+        cost: 2,
+        cooldown: 2,
+        targeting: {
+            type: 'line',
+            range: 2,
+            width: 1,
+            filter: 'enemy'
+        },
+        ops: [
+            { type: 'line', length: 2, piercing: true },
+            { type: 'damage', power: 1.2, damageType: 'arcane' }
+        ],
+        tags: ['offensive', 'line', 'arcane']
     },
 
     // ========================================================================

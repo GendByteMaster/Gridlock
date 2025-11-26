@@ -26,9 +26,9 @@ You are a master of the grid — a tactical board where units fight using custom
 
 ## 2. Core Gameplay
 ### 2.1. The Grid
-- 8×8 or 7×7 board
-- Similar to chess layout but with RPG modifications
-- Cells have properties (charged, inert, corrupted, overclocked, shielded)
+- **Board Size**: 10×10 tactical grid
+- Cells have properties (normal, charged, corrupted, void)
+- Strategic positioning is crucial
 
 ### 2.2. Units
 Each player controls six key units (like chess but reduced):
@@ -38,22 +38,6 @@ Each player controls six key units (like chess but reduced):
 - **Coreframe** (King archetype)
 - **Phantom** (Assassin type)
 - **Fabricator** (Support type)
-
-### 2.3. Movement
-- Based on traditional chess logic but enhanced with skill modifications
-- (Example: Vanguard jumps but can chain-dash after a skill activation)
-
-### 2.4. Combat
-Gridlock uses:
-- Ability-based combat (skills matter more than base attack)
-- Position locking (some abilities freeze tiles or prevent movement)
-- Momentum system (sequencing skills builds “momentum” for bonuses)
-
-## 3. The Node Skill System
-### 3.1. Structure
-Each unit has:
-- 3 Base Skill Paths (like elements/classes):
-    - Offense
     - Mobility
     - Control
 - Players choose 3 starting skill paths, one per category.
@@ -167,10 +151,25 @@ Activates when the player finishes a full sequence (e.g. 2-1-3):
 - No pay-to-win mechanics
 
 ## 9. Roadmap
-- Phase 1: Core Grid Engine
-- Phase 2: Node Skill System
-- Phase 3: Basic Units + Combat
-- Phase 4: UI + React Flow integration
-- Phase 5: AI Opponent
-- Phase 6: Multiplayer
-- Phase 7: Balancing + Early Access
+- [x] Phase 1: Core Grid Engine
+- [x] Phase 2: Combat System v3.0
+  - [x] FFT-style initiative
+  - [x] Operation-based skills
+  - [x] Status effect system
+  - [x] Damage calculations
+  - [x] Movement patterns
+- [ ] Phase 3: UI Polish
+- [ ] Phase 4: AI Opponent
+- [ ] Phase 5: Multiplayer
+- [ ] Phase 6: Balancing + Early Access
+
+---
+
+## 10. Technical Documentation
+
+For detailed technical information:
+- [Architecture Overview](./docs/ARCHITECTURE.md)
+- [Skill Creation Guide](./docs/SKILL_CREATION_GUIDE.md)
+- [Status Effects Guide](./docs/STATUS_EFFECTS_GUIDE.md)
+- [API Reference](./docs/API_REFERENCE.md)
+- [Developer Setup](./docs/DEVELOPER_SETUP.md)

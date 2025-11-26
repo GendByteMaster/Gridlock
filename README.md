@@ -20,30 +20,14 @@ You are a **master of the grid** — commanding units in tactical combat where e
 
 ---
 
-## 🎯 Game Overview
-
-### Genre
-**Tactical Grid RPG** / **Chess-Based Combat** / **Node Skill Strategy**
-
-### Key Features
-- ♟️ **Chess-Inspired Combat** - Familiar movement patterns enhanced with RPG mechanics
-- 🔗 **Node Skill System** - Build custom skill sequences and combos
-- 🎲 **Dynamic Grid** - Tiles with properties that change the battlefield
-- ⚡ **Momentum System** - Chain skills for powerful bonuses
-- 🎨 **Tech Noir Aesthetic** - Clean minimalism with neon highlights
-
----
-
-## 📋 Game Rules
-
 ### The Grid
 - **Board Size**: 10×10 tactical grid
 - **Tile Properties**: 
+  - **Normal** - Standard tile
   - **Charged** - Enhanced ability effects
   - **Inert** - Neutral state
   - **Corrupted** - Debuff zone
-  - **Overclocked** - Bonus momentum
-  - **Shielded** - Defensive barrier
+  - **Void** - Impassable obstacles
 
 ### Victory Condition
 **Eliminate the enemy Coreframe** (leader unit) while protecting your own.
@@ -158,13 +142,13 @@ npm run build
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React 18 + TypeScript
-- **Build Tool**: Vite
+- **Frontend**: React 18 + TypeScript 5
+- **Build Tool**: Vite 5
 - **State Management**: Zustand
-- **Styling**: CSS Modules + Framer Motion
-- **Skill Graph**: React Flow (optional)
-- **Grid Rendering**: Canvas / WebGL
-- **Backend**: Node.js (optional for multiplayer)
+- **Styling**: Tailwind CSS + Framer Motion
+- **Icons**: Lucide React
+- **Combat Engine**: Custom TypeScript engine
+- **Backend**: Node.js (planned for multiplayer)
 
 ---
 
@@ -187,12 +171,16 @@ npm run build
 ## 🗺️ Development Roadmap
 
 - [x] **Phase 1**: Core Grid Engine
-- [x] **Phase 2**: Node Skill System
-- [ ] **Phase 3**: Basic Units + Combat
-- [ ] **Phase 4**: UI + React Flow Integration
-- [ ] **Phase 5**: AI Opponent
-- [ ] **Phase 6**: Multiplayer
-- [ ] **Phase 7**: Balancing + Early Access
+- [x] **Phase 2**: Combat System v3.0
+  - [x] FFT-style initiative system
+  - [x] Operation-based skill system
+  - [x] Status effect framework
+  - [x] Damage calculation system
+  - [x] Movement patterns
+- [ ] **Phase 3**: UI Polish
+- [ ] **Phase 4**: AI Opponent
+- [ ] **Phase 5**: Multiplayer
+- [ ] **Phase 6**: Balancing + Early Access
 
 ---
 
@@ -211,9 +199,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
+## 📚 Documentation
+
+- [Architecture Overview](./docs/ARCHITECTURE.md) - System design and module structure
+- [Skill Creation Guide](./docs/SKILL_CREATION_GUIDE.md) - How to create custom skills
+- [Status Effects Guide](./docs/STATUS_EFFECTS_GUIDE.md) - Status effect system documentation
+- [API Reference](./docs/API_REFERENCE.md) - Complete API documentation
+- [Developer Setup](./docs/DEVELOPER_SETUP.md) - Setup and contribution guide
+
+---
+
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please see our [Developer Setup Guide](./docs/DEVELOPER_SETUP.md) for details.
 
 1. Fork the project
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
@@ -225,7 +223,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📞 Contact
 
-Project Link: [https://github.com/yourusername/gridlock](https://github.com/yourusername/gridlock)
+Project Link: [https://github.com/GendByteMaster/Gridlock](https://github.com/GendByteMaster/Gridlock)
 
 ---
 
