@@ -1,6 +1,6 @@
 import { Unit, Skill, CombatLogEvent, CellPos } from '../types';
 import { executeSkill, SkillExecutionContext, SkillExecutionResult } from '../skills/SkillResolver';
-import { processTurnStartEffects, processTurnEndEffects, processHitEffects, processMoveEffects } from '../effects/TurnEffects';
+import { processHitEffects } from '../effects/TurnEffects';
 import { recalculateUnit } from '../units/UnitCalc';
 import { resetInitiative, applyActionDelay } from './Initiative';
 
@@ -290,12 +290,12 @@ const executePostActionTriggers = (
     }
 
     // Process lifesteal
-    if (source.stats.lifesteal > 0 && skill.tags?.includes('offensive')) {
+    if ((source.stats.lifesteal ?? 0) > 0 && skill.tags?.includes('offensive')) {
         const totalDamage = skillResult.logs
             .filter(log => log.type === 'damage' && log.sourceId === source.id)
             .reduce((sum, log) => sum + (log.value || 0), 0);
 
-        const healAmount = Math.floor(totalDamage * source.stats.lifesteal);
+        const healAmount = Math.floor(totalDamage * (source.stats.lifesteal ?? 0));
         if (healAmount > 0) {
             source.stats.hp = Math.min(source.base.maxHp, source.stats.hp + healAmount);
             logs.push({
@@ -334,7 +334,7 @@ const processChainReactions = (
     logs: CombatLogEvent[];
     triggeredActions: ActionPipelineContext[];
 } => {
-    const { source, skill, allUnits, grid } = context;
+    const { source, skill: _skill, allUnits, grid: _grid } = context;
     const logs: CombatLogEvent[] = [];
     const triggeredActions: ActionPipelineContext[] = [];
 

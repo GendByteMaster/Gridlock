@@ -69,7 +69,7 @@ export interface UnitRuntime {
     lastActionTimestamp: number;
 }
 
-export type ModuleType = 'archetype' | 'specialization' | 'signature' | 'passive';
+export type ModuleType = 'archetype' | 'specialization' | 'signature' | 'passive' | 'equipment';
 
 export interface UnitModule {
     id: ModuleId;

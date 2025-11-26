@@ -126,7 +126,7 @@ const Board: React.FC = () => {
     };
 
     return (
-        <div className="relative aspect-square h-[85vh] max-h-[900px] bg-gray-900/40 backdrop-blur-2xl p-4 rounded-3xl shadow-2xl border border-white/10 ring-1 ring-black/50">
+        <div className="relative aspect-square h-[85vh] max-h-[900px] bg-system-material-regular backdrop-blur-2xl p-4 rounded-[32px] shadow-2xl border border-white/10 ring-1 ring-black/50">
             <div className="grid grid-cols-10 grid-rows-10 w-full h-full gap-px bg-white/5 border border-white/5 rounded-xl overflow-hidden shadow-inner">
                 {grid.map((row, y) =>
                     row.map((cell, x) => {

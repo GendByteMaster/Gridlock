@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useGameStore } from './store/gameStore';
 import Board from './components/Board';
 import SkillTree from './components/SkillTree';
@@ -107,18 +107,22 @@ function App() {
             </div>
 
             {/* Footer Info */}
-            <div className="w-full max-w-[900px] mt-3 flex items-center justify-center gap-6 px-4">
-                <div className="flex items-center gap-2 text-xs text-system-gray4">
-                    <div className="w-2 h-2 rounded-full bg-accent-blue" />
-                    <span>Player Units</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-system-gray4">
-                    <div className="w-2 h-2 rounded-full bg-accent-red" />
-                    <span>Opponent Units</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-system-gray4">
-                    <div className="w-2 h-2 rounded-full bg-accent-green" />
-                    <span>Valid Moves</span>
+            <div className="w-full max-w-[900px] mt-6 flex items-center justify-center">
+                <div className="flex items-center gap-8 px-8 py-2.5 bg-system-material-thin backdrop-blur-xl rounded-full border border-white/10 shadow-lg">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-2.5 h-2.5 rounded-full bg-accent-blue shadow-[0_0_8px_rgba(10,132,255,0.5)]" />
+                        <span className="text-[11px] font-medium text-system-label-secondary uppercase tracking-wide">Player Units</span>
+                    </div>
+                    <div className="w-px h-4 bg-white/10" />
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-2.5 h-2.5 rounded-full bg-accent-red shadow-[0_0_8px_rgba(255,69,58,0.5)]" />
+                        <span className="text-[11px] font-medium text-system-label-secondary uppercase tracking-wide">Opponent Units</span>
+                    </div>
+                    <div className="w-px h-4 bg-white/10" />
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-2.5 h-2.5 rounded-full bg-accent-green shadow-[0_0_8px_rgba(48,209,88,0.5)] animate-pulse" />
+                        <span className="text-[11px] font-medium text-system-label-secondary uppercase tracking-wide">Valid Moves</span>
+                    </div>
                 </div>
             </div>
 

@@ -1,5 +1,7 @@
 import { io, Socket } from 'socket.io-client';
-import { GameAction } from '../../server/src/types';
+
+// Define GameAction locally to avoid importing from server
+type GameAction = any;
 
 class SocketService {
     private socket: Socket | null = null;

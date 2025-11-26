@@ -19,7 +19,7 @@ export type UnitType =
 
 export type Player = 'player' | 'opponent';
 
-export type SkillCategory = 'Offense' | 'Mobility' | 'Control';
+export type SkillCategory = 'Offense' | 'Mobility' | 'Control' | 'Support';
 export type NodeType = 'Active' | 'Passive' | 'GridEffect' | 'Ultimate';
 
 export interface SkillNode {

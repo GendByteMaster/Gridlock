@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import { Sword, Move, Shield } from 'lucide-react';
 import { clsx } from 'clsx';

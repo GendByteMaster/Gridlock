@@ -26,6 +26,7 @@ export const calculateEffectiveStats = (unit: Unit): CurrentStats => {
         spd: unit.base.spd,
         crit: unit.base.crit,
         critDmg: unit.base.critDmg,
+        acc: unit.base.acc,
         eva: unit.base.eva || 0,
         shield: unit.stats.shield || 0,
         barrier: unit.stats.barrier || 0,
@@ -72,8 +73,8 @@ export const applyStatModifiers = (stats: CurrentStats, modifiers: Partial<BaseS
         crit: stats.crit + (modifiers.crit || 0),
         critDmg: stats.critDmg + (modifiers.critDmg || 0),
         eva: stats.eva + (modifiers.eva || 0),
-        penetration: stats.penetration + (modifiers.penetration || 0),
-        lifesteal: stats.lifesteal + (modifiers.lifesteal || 0)
+        penetration: (stats.penetration ?? 0) + (modifiers.penetration || 0),
+        lifesteal: (stats.lifesteal ?? 0) + (modifiers.lifesteal || 0)
     };
 };
 
@@ -97,8 +98,8 @@ export const clampStats = (stats: CurrentStats): CurrentStats => {
         eva: Math.max(0, Math.min(1, stats.eva)), // 0-100%
         shield: Math.max(0, stats.shield),
         barrier: Math.max(0, stats.barrier),
-        penetration: Math.max(0, Math.min(1, stats.penetration)), // 0-100%
-        lifesteal: Math.max(0, Math.min(1, stats.lifesteal)) // 0-100%
+        penetration: Math.max(0, Math.min(1, stats.penetration ?? 0)), // 0-100%
+        lifesteal: Math.max(0, Math.min(1, stats.lifesteal ?? 0)) // 0-100%
     };
 };
 

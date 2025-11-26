@@ -7,7 +7,7 @@ import { Position } from '../types';
 export function calculateValidMoves(
     unitPos: Position,
     moveRange: number,
-    grid: any[][],
+    _grid: any[][],
     units: any[]
 ): Position[] {
     const validMoves: Position[] = [];

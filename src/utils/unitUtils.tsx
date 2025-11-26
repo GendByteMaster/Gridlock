@@ -1,4 +1,3 @@
-import React from 'react';
 import { UnitType } from '../types';
 import {
     GuardianIcon, ScoutIcon, StrikerIcon, ArcanistIcon, VanguardIcon,

@@ -3,18 +3,13 @@
 @tailwind utilities;
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  /* Apple HIG Typography Defaults */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  
+  /* Prevent scrolling on body to feel like an app */
+  overflow: hidden;
 }
 
 body {
@@ -23,14 +18,17 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  /* Midnight Aurora Theme */
-  background: linear-gradient(135deg, #0a0e27 0%, #1a1042 50%, #0f0820 100%);
-  background-image: 
-    radial-gradient(ellipse at 20% 30%, rgba(138, 43, 226, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 70%, rgba(30, 144, 255, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(75, 0, 130, 0.1) 0%, transparent 70%),
-    linear-gradient(135deg, #0a0e27 0%, #1a1042 50%, #0f0820 100%);
-  color: #f5f5f7;
+  
+  /* Midnight Aurora Theme - Refined */
+  background-color: #000000;
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(10, 132, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 85% 30%, rgba(94, 92, 230, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 15% 60%, rgba(191, 90, 242, 0.1) 0%, transparent 60%),
+    linear-gradient(180deg, #050505 0%, #0a0a0a 100%);
+    
+  color: #FFFFFF;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 #root {
@@ -40,4 +38,15 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }

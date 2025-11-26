@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { SkillNode, SkillSequence } from '../types';
+import { SkillNode } from '../types';
 import { SKILLS } from '../data/skills';
 
 interface SkillState {

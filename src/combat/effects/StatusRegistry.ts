@@ -21,10 +21,10 @@ export const STATUS_REGISTRY: Record<string, StatusDefinition> = {
             def: 20,
             res: 10
         },
-        onApply: (unit: Unit, instance: StatusInstance) => {
+        onApply: () => {
             // Recalculate stats when applied
         },
-        onRemove: (unit: Unit, instance: StatusInstance) => {
+        onRemove: () => {
             // Recalculate stats when removed
         }
     },
@@ -47,7 +47,7 @@ export const STATUS_REGISTRY: Record<string, StatusDefinition> = {
         isStackable: false,
         isExclusiveWith: ['slow'],
         initiativeModifier: 50, // Acts faster
-        onApply: (unit: Unit) => {
+        onApply: () => {
             // Speed buff applied via initiativeModifier
         }
     },
@@ -72,7 +72,7 @@ export const STATUS_REGISTRY: Record<string, StatusDefinition> = {
         onApply: (unit: Unit, instance: StatusInstance) => {
             unit.stats.shield += instance.value || 50;
         },
-        onRemove: (unit: Unit, instance: StatusInstance) => {
+        onRemove: () => {
             // Shield decays naturally
         }
     },
@@ -213,7 +213,7 @@ export const STATUS_REGISTRY: Record<string, StatusDefinition> = {
             def: -10,
             spd: -10
         },
-        onTick: (unit: Unit, instance: StatusInstance) => {
+        onTick: (unit: Unit) => {
             // Curse also deals damage
             const damage = 5;
             unit.stats.hp = Math.max(0, unit.stats.hp - damage);
@@ -249,7 +249,7 @@ export const STATUS_REGISTRY: Record<string, StatusDefinition> = {
         onRemove: (unit: Unit) => {
             unit.runtime.isFrozen = false;
         },
-        onHit: (unit: Unit, instance: StatusInstance, target: Unit) => {
+        onHit: () => {
             // Frozen units shatter when hit, taking extra damage
             // This would be handled in damage calculation
         },
@@ -295,7 +295,7 @@ export const STATUS_REGISTRY: Record<string, StatusDefinition> = {
         onRemove: (unit: Unit) => {
             unit.runtime.isSleeping = false;
         },
-        onHit: (unit: Unit, instance: StatusInstance) => {
+        onHit: (unit: Unit) => {
             // Sleep breaks when hit
             unit.runtime.isSleeping = false;
             // Remove the status (would need status removal logic)
@@ -355,7 +355,7 @@ export const STATUS_REGISTRY: Record<string, StatusDefinition> = {
         isAura: true,
         auraRadius: 2,
         isPersistent: true,
-        onTick: (unit: Unit, instance: StatusInstance) => {
+        onTick: (unit: Unit) => {
             // Heal allies in range
             const healAmount = 10;
             unit.stats.hp = Math.min(unit.base.maxHp, unit.stats.hp + healAmount);

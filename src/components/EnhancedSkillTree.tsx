@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useProgressionStore } from '../store/progressionStore';
-import { useSkillStore } from '../store/skillStore';
 import { SKILLS } from '../data/skills';
 import { ArrowLeft, Lock, Check, Zap } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -15,7 +14,6 @@ const unitTypes = ['Vanguard', 'Coreframe', 'Sentinel', 'Arcanist', 'Phantom', '
 const EnhancedSkillTree: React.FC<EnhancedSkillTreeProps> = ({ onBack }) => {
     const [selectedUnit, setSelectedUnit] = useState<string>('Vanguard');
     const { playerStats, unlockedSkills, unlockSkill, spendSkillPoint } = useProgressionStore();
-    const { availableSkills } = useSkillStore();
 
     const unitSkills = unlockedSkills[selectedUnit] || [];
     const allSkills = Object.values(SKILLS);

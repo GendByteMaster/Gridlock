@@ -23,7 +23,7 @@ const Unit: React.FC<UnitProps> = ({ unit, isSelected, onClick }) => {
             setDamagePopup({ value: damage, id: Date.now() });
         }
         setPrevHp(unit.stats.hp);
-    }, [unit.stats.hp]);
+    }, [unit.stats.hp, prevHp]);
 
     const hpPercentage = (unit.stats.hp / unit.stats.maxHp) * 100;
     const isTarget = targetingSkillId && validMoves.some(p => p.x === unit.pos.x && p.y === unit.pos.y);
@@ -33,81 +33,81 @@ const Unit: React.FC<UnitProps> = ({ unit, isSelected, onClick }) => {
             layoutId={`unit-${unit.id}`}
             initial={{ scale: 0, opacity: 0 }}
             animate={{
-                scale: isSelected ? 1.1 : 1,
+                scale: isSelected ? 1.15 : 1,
                 opacity: 1,
-                y: isSelected ? -5 : 0,
-                x: damagePopup ? [0, -5, 5, -5, 5, 0] : 0, // Shake effect
+                y: isSelected ? -8 : 0,
+                x: damagePopup ? [0, -5, 5, -5, 5, 0] : 0,
+                zIndex: isSelected ? 50 : 10,
             }}
-            exit={{ scale: 0, opacity: 0, filter: 'brightness(0) saturate(100%) invert(15%) sepia(95%) saturate(6932%) hue-rotate(358deg) brightness(96%) contrast(113%)' }} // Red flash on death
-            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="relative w-full h-full flex items-center justify-center z-10 pointer-events-auto"
+            exit={{ scale: 0, opacity: 0, filter: 'brightness(0) saturate(100%) invert(15%) sepia(95%) saturate(6932%) hue-rotate(358deg) brightness(96%) contrast(113%)' }}
+            transition={{
+                type: 'spring',
+                stiffness: 400,
+                damping: 30,
+                mass: 0.8
+            }}
+            className="relative w-full h-full flex items-center justify-center pointer-events-auto"
             onClick={(e) => {
                 e.stopPropagation();
                 onClick();
             }}
         >
-            {/* Selection Ring */}
+            {/* Selection Glow */}
             {isSelected && (
                 <motion.div
-                    layoutId="selection-ring"
-                    className="absolute inset-0 rounded-full border-2 border-white shadow-[0_0_15px_rgba(255,255,255,0.5)]"
-                    transition={{ duration: 0.2 }}
+                    layoutId="selection-glow"
+                    className="absolute inset-0 rounded-[24px] bg-accent-blue/30 blur-xl"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                 />
             )}
 
             {/* Target Indicator */}
             {isTarget && (
                 <motion.div
-                    className="absolute inset-0 rounded-full border-2 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]"
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ repeat: Infinity, duration: 1 }}
+                    className="absolute -inset-2 rounded-[32px] border-2 border-accent-red/50"
+                    animate={{
+                        scale: [1, 1.1, 1],
+                        opacity: [0.5, 1, 0.5]
+                    }}
+                    transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
                 />
             )}
 
-            {/* Unit Body */}
+            {/* Unit Body (Glass Token) */}
             <div
                 className={clsx(
-                    "w-4/5 h-4/5 rounded-xl flex items-center justify-center shadow-lg backdrop-blur-md border transition-colors duration-300",
+                    "relative w-[85%] h-[85%] rounded-[24px] flex items-center justify-center overflow-hidden transition-all duration-300",
+                    "bg-system-material-regular backdrop-blur-xl border border-white/10 shadow-lg",
+                    isSelected && "shadow-2xl ring-1 ring-white/20",
                     isPlayer
-                        ? "bg-accent-blue/20 border-accent-blue/50 text-accent-blue"
-                        : "bg-accent-red/20 border-accent-red/50 text-accent-red",
-                    isSelected && "bg-opacity-40"
+                        ? "shadow-accent-blue/10"
+                        : "shadow-accent-red/10"
                 )}
             >
-                {getUnitIcon(unit.type)}
-            </div>
+                {/* Inner Gradient Tint */}
+                <div className={clsx(
+                    "absolute inset-0 opacity-20 bg-gradient-to-br",
+                    isPlayer
+                        ? "from-accent-blue to-transparent"
+                        : "from-accent-red to-transparent"
+                )} />
 
-            {/* Damage Popup */}
-            <AnimatePresence>
-                {damagePopup && (
-                    <motion.div
-                        key={damagePopup.id}
-                        initial={{ opacity: 1, y: 0, scale: 0.5 }}
-                        animate={{ opacity: 0, y: -30, scale: 1.5 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        onAnimationComplete={() => setDamagePopup(null)}
-                        className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-red-500 font-bold text-xl z-50 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]"
-                    >
-                        -{damagePopup.value}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                {/* Icon */}
+                <div className={clsx(
+                    "relative z-10 transition-colors duration-300",
+                    isPlayer ? "text-accent-blue" : "text-accent-red",
+                    isSelected && "scale-110"
+                )}>
+                    {getUnitIcon(unit.type, 32)}
+                </div>
 
-            {/* Health Bar */}
-            <div className="absolute -bottom-2 w-full px-1">
-                <div className="w-full h-1 bg-black/50 rounded-full overflow-hidden backdrop-blur-sm relative">
-                    {/* Ghost Bar (Delayed) */}
-                    <motion.div
-                        className="absolute top-0 left-0 h-full bg-white/50 rounded-full"
-                        initial={{ width: '100%' }}
-                        animate={{ width: `${hpPercentage}%` }}
-                        transition={{ delay: 0.2, duration: 0.5, ease: "easeOut" }}
-                    />
-                    {/* Main Bar */}
+                {/* Health Bar (Slim Bottom Curve) */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/20">
                     <motion.div
                         className={clsx(
-                            "absolute top-0 left-0 h-full rounded-full z-10",
+                            "h-full",
                             isPlayer ? "bg-accent-blue" : "bg-accent-red"
                         )}
                         initial={{ width: '100%' }}
@@ -117,6 +117,24 @@ const Unit: React.FC<UnitProps> = ({ unit, isSelected, onClick }) => {
                 </div>
             </div>
 
+            {/* Damage Popup */}
+            <AnimatePresence>
+                {damagePopup && (
+                    <motion.div
+                        key={damagePopup.id}
+                        initial={{ opacity: 0, y: -10, scale: 0.5 }}
+                        animate={{ opacity: 1, y: -40, scale: 1.2 }}
+                        exit={{ opacity: 0, y: -50 }}
+                        transition={{ duration: 0.6, ease: "circOut" }}
+                        onAnimationComplete={() => setDamagePopup(null)}
+                        className="absolute top-0 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none"
+                    >
+                        <span className="text-3xl font-display font-bold text-accent-red drop-shadow-lg stroke-black">
+                            -{damagePopup.value}
+                        </span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 };

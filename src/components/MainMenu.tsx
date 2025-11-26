@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Play, Settings, Info, BookOpen } from 'lucide-react';
+import { Button } from './ui/Button';
 
 interface MainMenuProps {
     onPlay: () => void;
@@ -9,106 +10,107 @@ interface MainMenuProps {
 
 const MainMenu: React.FC<MainMenuProps> = ({ onPlay, onHowToPlay }) => {
     return (
-        <div className="h-screen w-full flex items-center justify-center p-4 overflow-hidden">
-            {/* Animated background grid - Made subtle for new theme */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-                <div className="absolute inset-0" style={{
-                    backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)
-          `,
-                    backgroundSize: '40px 40px'
-                }} />
+        <div className="h-screen w-full flex items-center justify-center p-4 overflow-hidden relative">
+            {/* Background Effects */}
+            <div className="absolute inset-0 bg-system-background-primary">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(10,132,255,0.15)_0%,_transparent_50%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,_rgba(94,92,230,0.15)_0%,_transparent_50%)]" />
             </div>
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                style={{ willChange: 'transform' }}
-                className="relative z-10 w-full max-w-md"
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} // Apple-like spring
+                className="relative z-10 w-full max-w-sm flex flex-col items-center"
             >
                 {/* Logo */}
                 <div className="text-center mb-16">
                     <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
+                        initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 0.8, delay: 0.2, ease: "backOut" }}
-                        style={{ willChange: 'transform' }}
-                        className="mb-6 relative"
+                        transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                        className="mb-4 relative"
                     >
-                        <h1 className="text-8xl font-bold text-white tracking-tighter mb-2 drop-shadow-2xl">
+                        <h1 className="text-7xl font-display font-bold text-white tracking-tight mb-2 drop-shadow-2xl">
                             GRIDLOCK
                         </h1>
-                        <div className="absolute -inset-10 bg-blue-500/20 blur-3xl rounded-full -z-10 opacity-50" />
-                        <div className="h-1.5 w-32 mx-auto bg-gradient-to-r from-transparent via-blue-500 to-transparent rounded-full" />
+                        <div className="h-1 w-24 mx-auto bg-gradient-to-r from-transparent via-accent-blue to-transparent rounded-full opacity-80" />
                     </motion.div>
                     <motion.p
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ delay: 0.6 }}
-                        className="text-lg text-white/40 tracking-[0.2em] font-medium uppercase"
+                        transition={{ delay: 0.6, duration: 0.8 }}
+                        className="text-sm text-system-label-secondary tracking-[0.2em] font-medium uppercase"
                     >
                         Tactical Grid Combat
                     </motion.p>
                 </div>
 
                 {/* Menu Buttons */}
-                <div className="space-y-4">
-                    <motion.button
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
+                <div className="w-full space-y-4">
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.7 }}
-                        whileHover={{ scale: 1.02, x: 4 }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{ willChange: 'transform' }}
-                        onClick={onPlay}
-                        className="group w-full py-5 bg-white text-black font-bold text-xl rounded-2xl transition-all duration-300 flex items-center justify-center gap-4 shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] hover:bg-blue-50 relative overflow-hidden"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                        <Play size={24} fill="black" />
-                        PLAY
-                    </motion.button>
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            className="w-full h-14 text-lg shadow-xl shadow-accent-blue/20"
+                            onClick={onPlay}
+                            leftIcon={<Play size={20} fill="currentColor" />}
+                        >
+                            Play Game
+                        </Button>
+                    </motion.div>
 
-                    <motion.button
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.8 }}
-                        whileHover={{ scale: 1.02, x: 4 }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{ willChange: 'transform' }}
-                        onClick={onHowToPlay}
-                        className="w-full py-4 bg-gray-900/40 hover:bg-gray-800/60 backdrop-blur-xl border border-white/10 text-white font-medium text-lg rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 hover:border-white/20"
                     >
-                        <BookOpen size={20} className="text-white/60 group-hover:text-white" />
-                        How to Play
-                    </motion.button>
+                        <Button
+                            variant="glass"
+                            size="lg"
+                            className="w-full h-14 text-lg"
+                            onClick={onHowToPlay}
+                            leftIcon={<BookOpen size={20} />}
+                        >
+                            How to Play
+                        </Button>
+                    </motion.div>
 
-                    <motion.button
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.9 }}
-                        whileHover={{ scale: 1.02, x: 4 }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{ willChange: 'transform' }}
-                        className="w-full py-4 bg-gray-900/40 hover:bg-gray-800/60 backdrop-blur-xl border border-white/10 text-white font-medium text-lg rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 hover:border-white/20"
-                    >
-                        <Settings size={20} className="text-white/60 group-hover:text-white" />
-                        Settings
-                    </motion.button>
+                    <div className="grid grid-cols-2 gap-4 pt-2">
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.9 }}
+                        >
+                            <Button
+                                variant="glass"
+                                size="md"
+                                className="w-full"
+                                leftIcon={<Settings size={18} />}
+                            >
+                                Settings
+                            </Button>
+                        </motion.div>
 
-                    <motion.button
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 1.0 }}
-                        whileHover={{ scale: 1.02, x: 4 }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{ willChange: 'transform' }}
-                        className="w-full py-4 bg-gray-900/40 hover:bg-gray-800/60 backdrop-blur-xl border border-white/10 text-white font-medium text-lg rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 hover:border-white/20"
-                    >
-                        <Info size={20} className="text-white/60 group-hover:text-white" />
-                        About
-                    </motion.button>
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 1.0 }}
+                        >
+                            <Button
+                                variant="glass"
+                                size="md"
+                                className="w-full"
+                                leftIcon={<Info size={18} />}
+                            >
+                                About
+                            </Button>
+                        </motion.div>
+                    </div>
                 </div>
 
                 {/* Version */}
@@ -116,9 +118,11 @@ const MainMenu: React.FC<MainMenuProps> = ({ onPlay, onHowToPlay }) => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1.2 }}
-                    className="text-center mt-12"
+                    className="mt-12"
                 >
-                    <span className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-xs text-white/30 font-mono">v0.1.0 Alpha</span>
+                    <span className="px-3 py-1 rounded-full bg-system-fill-tertiary text-[10px] text-system-label-tertiary font-mono border border-white/5">
+                        v0.1.0 Alpha
+                    </span>
                 </motion.div>
             </motion.div>
         </div>

@@ -8,31 +8,87 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['"SF Pro Display"', '"SF Pro Text"', 'system-ui', 'sans-serif'],
+                sans: [
+                    '-apple-system',
+                    'BlinkMacSystemFont',
+                    '"SF Pro Text"',
+                    '"Segoe UI"',
+                    'Roboto',
+                    'Helvetica',
+                    'Arial',
+                    'sans-serif',
+                ],
+                display: [
+                    '-apple-system',
+                    'BlinkMacSystemFont',
+                    '"SF Pro Display"',
+                    '"Segoe UI"',
+                    'Roboto',
+                    'Helvetica',
+                    'Arial',
+                    'sans-serif',
+                ],
+                mono: [
+                    'ui-monospace',
+                    'SFMono-Regular',
+                    'Menlo',
+                    'Monaco',
+                    'Consolas',
+                    '"Liberation Mono"',
+                    '"Courier New"',
+                    'monospace',
+                ],
             },
             colors: {
-                // Apple-inspired system grays (Dark Mode)
+                // Apple HIG System Colors (Dark Mode default)
                 system: {
-                    bg: '#000000',
-                    gray1: '#1C1C1E',
-                    gray2: '#2C2C2E',
-                    gray3: '#3A3A3C',
-                    gray4: '#48484A',
-                    gray5: '#636366',
-                    gray6: '#8E8E93',
+                    // Backgrounds
+                    background: {
+                        primary: '#000000',
+                        secondary: '#1C1C1E',
+                        tertiary: '#2C2C2E',
+                    },
+                    // Labels (Text)
+                    label: {
+                        primary: '#FFFFFF',
+                        secondary: 'rgba(235, 235, 245, 0.60)',
+                        tertiary: 'rgba(235, 235, 245, 0.30)',
+                        quaternary: 'rgba(235, 235, 245, 0.18)',
+                    },
+                    // Fills
+                    fill: {
+                        primary: 'rgba(120, 120, 128, 0.36)',
+                        secondary: 'rgba(120, 120, 128, 0.32)',
+                        tertiary: 'rgba(118, 118, 128, 0.24)',
+                        quaternary: 'rgba(116, 116, 128, 0.18)',
+                    },
+                    // Separators
+                    separator: {
+                        DEFAULT: 'rgba(84, 84, 88, 0.65)', // Opaque separator
+                        nonOpaque: 'rgba(84, 84, 88, 0.65)',
+                    },
+                    // Materials (for backdrop-filter)
+                    material: {
+                        thick: 'rgba(30, 30, 30, 0.75)',
+                        regular: 'rgba(30, 30, 30, 0.70)',
+                        thin: 'rgba(30, 30, 30, 0.60)',
+                        ultrathin: 'rgba(30, 30, 30, 0.45)',
+                    }
                 },
-                // Accent colors
+                // Semantic Action Colors
                 accent: {
-                    blue: '#0A84FF',
-                    red: '#FF453A',
-                    green: '#30D158',
-                    indigo: '#5E5CE6',
-                    orange: '#FF9F0A',
-                    pink: '#FF375F',
-                    purple: '#BF5AF2',
-                    teal: '#64D2FF',
-                    yellow: '#FFD60A',
+                    blue: '#0A84FF',   // iOS System Blue Dark
+                    red: '#FF453A',    // iOS System Red Dark
+                    green: '#30D158',  // iOS System Green Dark
+                    indigo: '#5E5CE6', // iOS System Indigo Dark
+                    orange: '#FF9F0A', // iOS System Orange Dark
+                    pink: '#FF375F',   // iOS System Pink Dark
+                    purple: '#BF5AF2', // iOS System Purple Dark
+                    teal: '#64D2FF',   // iOS System Teal Dark
+                    yellow: '#FFD60A', // iOS System Yellow Dark
+                    gray: '#8E8E93',   // iOS System Gray Dark
                 },
+                // Game Specific Semantic Colors
                 grid: {
                     base: '#000000',
                     cell: 'rgba(255, 255, 255, 0.05)',
@@ -41,8 +97,15 @@ export default {
                     valid: '#30D158',
                 }
             },
+            borderRadius: {
+                '4xl': '2rem', // 32px
+                '5xl': '2.5rem', // 40px
+            },
             backdropBlur: {
                 xs: '2px',
+                md: '10px', // Regular material
+                lg: '20px', // Thick material
+                xl: '30px', // Ultra thick
             }
         },
     },

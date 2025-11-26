@@ -260,7 +260,7 @@ export const transferStatus = (
 export const convertStatusType = (
     unit: Unit,
     fromType: 'buff' | 'debuff' | 'control',
-    toType: 'buff' | 'debuff' | 'control'
+    _toType: 'buff' | 'debuff' | 'control'
 ): Unit => {
     // This is a placeholder - actual implementation would need
     // a mapping of debuff -> buff equivalents

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, MousePointer2, Shield, Sword, Zap, Target, Move, Grid3X3 } from 'lucide-react';
+import { ArrowLeft, Shield, Sword, Zap, Target, Move, Grid3X3 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { GuardianIcon, StrikerIcon, ScoutIcon } from './icons/UnitIcons';
 

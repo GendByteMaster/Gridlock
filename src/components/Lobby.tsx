@@ -106,7 +106,7 @@ const Lobby: React.FC<LobbyProps> = ({ onGameStart, onBack }) => {
                             <span>Players ({currentRoom?.players?.length || 0}/2)</span>
                         </div>
                         <div className="space-y-2">
-                            {currentRoom?.players?.map((player: any, index: number) => (
+                            {currentRoom?.players?.map((player: any, _index: number) => (
                                 <div key={player.id} className="p-3 bg-white/5 rounded-lg border border-white/10">
                                     <div className="flex items-center justify-between">
                                         <span className="text-white font-medium">{player.name}</span>

@@ -216,8 +216,27 @@ export const useGameStore = create<ExtendedGameState>((set, get) => ({
                         }
                     }
                 }
+            } else if (skill.category === 'Support') {
+                // Support targeting (Allies)
+                for (let dy = -range; dy <= range; dy++) {
+                    for (let dx = -range; dx <= range; dx++) {
+                        if (Math.abs(dx) + Math.abs(dy) > range) continue;
+                        if (dx === 0 && dy === 0 && skill.id !== 'meditate') continue; // Allow self-target for meditate
+                        const nx = x + dx;
+                        const ny = y + dy;
+                        if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE) {
+                            const targetCell = grid[ny][nx];
+                            if (targetCell.isOccupied && targetCell.unitId) {
+                                const targetUnit = units.find(u => u.id === targetCell.unitId);
+                                if (targetUnit && targetUnit.owner === unit.owner) {
+                                    validTargets.push({ x: nx, y: ny });
+                                }
+                            }
+                        }
+                    }
+                }
             } else {
-                // Offensive/Control targeting
+                // Offensive/Control targeting (Enemies)
                 for (let dy = -range; dy <= range; dy++) {
                     for (let dx = -range; dx <= range; dx++) {
                         if (Math.abs(dx) + Math.abs(dy) > range) continue;
@@ -226,9 +245,11 @@ export const useGameStore = create<ExtendedGameState>((set, get) => ({
                         const ny = y + dy;
                         if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE) {
                             const targetCell = grid[ny][nx];
-                            // Simple check: can target units
                             if (targetCell.isOccupied && targetCell.unitId) {
-                                validTargets.push({ x: nx, y: ny });
+                                const targetUnit = units.find(u => u.id === targetCell.unitId);
+                                if (targetUnit && targetUnit.owner !== unit.owner) {
+                                    validTargets.push({ x: nx, y: ny });
+                                }
                             }
                         }
                     }

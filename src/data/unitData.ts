@@ -214,5 +214,127 @@ export const UNIT_DATA: Record<UnitType, UnitStaticData> = {
             name: 'Cosmic Insight',
             description: 'Can see hidden/stealthed enemies.'
         }
+    },
+
+    // Additional Basic Units
+    Coreframe: {
+        name: 'Coreframe',
+        role: 'Mech Unit',
+        description: 'Mechanical unit with modular capabilities.',
+        movement: '1 tile'
+    },
+    Phantom: {
+        name: 'Phantom',
+        role: 'Stealth Unit',
+        description: 'Elusive unit that can become invisible.',
+        movement: '1 tile'
+    },
+    Fabricator: {
+        name: 'Fabricator',
+        role: 'Builder',
+        description: 'Creates structures and fortifications.',
+        movement: '1 tile'
+    },
+    Bastion: {
+        name: 'Bastion',
+        role: 'Defender',
+        description: 'Immovable defensive unit.',
+        movement: '1 tile'
+    },
+    Weaver: {
+        name: 'Weaver',
+        role: 'Mage',
+        description: 'Manipulates the battlefield with magic.',
+        movement: '1 tile'
+    },
+    Spectre: {
+        name: 'Spectre',
+        role: 'Ghost',
+        description: 'Ethereal unit that phases through enemies.',
+        movement: '1 tile'
+    },
+    Ronin: {
+        name: 'Ronin',
+        role: 'Swordsman',
+        description: 'Masterless warrior with deadly precision.',
+        movement: '1 tile'
+    },
+    Juggernaut: {
+        name: 'Juggernaut',
+        role: 'Heavy',
+        description: 'Unstoppable force that crushes enemies.',
+        movement: '1 tile'
+    },
+    Medic: {
+        name: 'Medic',
+        role: 'Healer',
+        description: 'Supports allies with healing and buffs.',
+        movement: '1 tile'
+    },
+    Sniper: {
+        name: 'Sniper',
+        role: 'Marksman',
+        description: 'Long-range specialist with deadly accuracy.',
+        movement: '1 tile'
+    },
+    Engineer: {
+        name: 'Engineer',
+        role: 'Support',
+        description: 'Builds defenses and repairs units.',
+        movement: '1 tile'
+    },
+    Summoner: {
+        name: 'Summoner',
+        role: 'Conjurer',
+        description: 'Summons minions to fight.',
+        movement: '1 tile'
+    },
+    Assassin: {
+        name: 'Assassin',
+        role: 'Killer',
+        description: 'Eliminates high-value targets.',
+        movement: '1 tile'
+    },
+    Templar: {
+        name: 'Templar',
+        role: 'Holy Warrior',
+        description: 'Divine protector with healing powers.',
+        movement: '1 tile'
+    },
+    Dragoon: {
+        name: 'Dragoon',
+        role: 'Lancer',
+        description: 'Mounted warrior with powerful charges.',
+        movement: '1 tile'
+    },
+    Valkyrie: {
+        name: 'Valkyrie',
+        role: 'Battle Maiden',
+        description: 'Warrior who buffs allies in combat.',
+        movement: '1 tile'
+    },
+    Overlord: {
+        name: 'Overlord',
+        role: 'Commander',
+        description: 'Commands units and provides tactical bonuses.',
+        movement: '1 tile'
+    },
+    Titan: {
+        name: 'Titan',
+        role: 'Colossus',
+        description: 'Massive unit with devastating power.',
+        movement: '1 tile'
+    },
+    Bomber: {
+        name: 'Bomber',
+        role: 'Demolition',
+        description: 'Explosive specialist that deals AoE damage.',
+        movement: '1 tile'
+    },
+    Turret: {
+        name: 'Turret',
+        role: 'Structure',
+        description: 'Stationary defensive structure.',
+        movement: '0 tiles'
     }
 };

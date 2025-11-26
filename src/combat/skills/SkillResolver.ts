@@ -117,7 +117,7 @@ export const executeSkill = (context: SkillExecutionContext): SkillExecutionResu
  * @returns Validation result
  */
 export const validateSkillExecution = (context: SkillExecutionContext): { valid: boolean; error?: string } => {
-    const { source, target, position, skill } = context;
+    const { source, target: _target, position: _position, skill } = context;
 
     // Check if skill exists
     if (!skill) {
