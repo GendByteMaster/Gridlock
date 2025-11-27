@@ -507,10 +507,6 @@ export function calculateUnitMoves(
             if (isValidMove(f1, units, grid)) {
                 moves.push(f1);
                 // Forward 2 (only if 1 is valid and not blocked by ally - actually Vanguard rule says "if ally in front, cannot move 2")
-                // Standard check: if f1 is occupied, cannot go to f2 (unless jump, which Vanguard is not)
-                // Specific rule: "if ally in front, cannot move 2".
-                // If f1 is empty, can he move 2? Yes.
-                // If f1 is enemy? Standard collision (blocked).
                 const f1Unit = getUnitAt(f1, units);
                 if (!f1Unit) {
                     const f2 = { x: from.x, y: from.y + forwardDy * 2 };
@@ -527,8 +523,6 @@ export function calculateUnitMoves(
             return sentinelMoves.filter(p => {
                 const dy = p.y - from.y;
                 // Prevent forward movement
-                // If player (forward is -1), prevent dy = -1. So dy must be >= 0.
-                // If opponent (forward is 1), prevent dy = 1. So dy must be <= 0.
                 if (isPlayer && dy < 0) return false;
                 if (!isPlayer && dy > 0) return false;
                 return true;
@@ -558,21 +552,7 @@ export function calculateUnitMoves(
 
         case 'WarImp':
             // Zigzag (any cell within 2 steps, can jump)
-            // We can approximate this as "Any direction range 2, can jump"
-            // But "Zigzag" implies specific pathing. For "valid moves" destination, it's basically range 2.
-            // The prompt says "1 cell -> turn -> 1 cell". This covers all cells at Manhattan distance 2 (and 1).
-            // (0,0) -> (0,1) -> (1,1) (Diagonal)
-            // (0,0) -> (0,1) -> (0,2) (Straight)
-            // (0,0) -> (0,1) -> (-1,1) (Knight-ish but not really)
-            // Actually, "1 cell -> turn -> 1 cell" usually means you can't go straight 2?
-            // "1 cell -> turn -> 1 cell" implies a change in direction.
-            // If I go North, I must turn East, West, or South (back).
-            // If I go North then North, that's straight.
-            // If "Zigzag" is the ONLY way, then straight 2 is forbidden?
-            // "2 cells in any direction" is the base. "Zigzag" is an elaboration.
-            // Let's assume it allows straight too, as "2 cells in any direction" is the header.
-            // I'll stick to Any Direction Range 2, Jump enabled.
-            return calculateAnyDirectionMoves(from, 2, units, grid, pattern.canPassThrough);
+            return calculateAnyDirectionMoves(from, 2, units, grid, 'both');
 
         case 'EmberWitch':
             // 2 cells diagonal or 1 cell straight
@@ -588,21 +568,9 @@ export function calculateUnitMoves(
 
         case 'Arcanist':
             // 1 diagonal. If no skill used -> 2 diagonal.
-            // We don't have easy access to "has used skill" here without passing more state.
-            // For now, let's assume standard 1 diagonal, and maybe the "Enhanced Movement" is a buff applied at start of turn?
-            // Or we check `unit.runtime.hasActed`.
-            // If unit hasn't acted, maybe show 2? But moving IS acting usually.
-            // "If Arcanist did NOT use ability, movement is enhanced".
-            // This implies Move is the second action? Or Move is the only action?
-            // If I move first, I haven't used ability. So I can move 2?
-            // Yes, "can move 2 tiles diagonal, but only in one direction".
-            // So if I haven't attacked yet, I can move 2.
             const arcanistRange = unit.runtime?.hasActed ? 1 : 2;
-            // Note: hasActed usually includes movement. If I am selecting movement, I haven't moved yet.
-            // But "hasActed" might mean "used skill".
-            // Let's assume if I am in movement phase, I haven't used skill yet (unless Quick Cast).
-            // We'll use range 2 by default if not acted.
-            return calculateDiagonalMoves(from, arcanistRange, units, grid, pattern.canPassThrough);
+            const arcanistPassThrough = arcanistRange === 2 ? 'both' : 'none';
+            return calculateDiagonalMoves(from, arcanistRange, units, grid, arcanistPassThrough);
 
         default:
             // Standard pattern processing

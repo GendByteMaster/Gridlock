@@ -1,54 +1,9 @@
-export type Position = {
-    x: number;
-    y: number;
-};
+export * from './primitives';
+import { Unit as CombatUnit } from '../combat/types';
+import { Position, UnitType, Player, Skill } from './primitives';
 
-export type UnitType =
-    // Basic Units
-    | 'Guardian' | 'Scout' | 'Striker' | 'Arcanist' | 'Vanguard'
-    | 'Sentinel' | 'Mechanist' | 'Monk' | 'FrostAdept' | 'WarImp'
-    | 'Coreframe' | 'Phantom' | 'Fabricator' | 'Bastion' | 'Weaver'
-    | 'Spectre' | 'Ronin' | 'Juggernaut' | 'Medic' | 'Sniper'
-    | 'Engineer' | 'Summoner' | 'Assassin' | 'Templar' | 'Dragoon'
-    | 'Valkyrie' | 'Overlord' | 'Titan' | 'Bomber'
-    // Unique Units
-    | 'ChronoKnight' | 'StormTitan' | 'ShadowDancer' | 'SolarPriest' | 'VoidWalker'
-    | 'IronColossus' | 'ArcaneArcher' | 'BoneReaper' | 'EmberWitch' | 'AstralSentinel'
-    // Summoned Units
-    | 'Turret';
-
-export type Player = 'player' | 'opponent';
-
-export type SkillCategory = 'Offense' | 'Mobility' | 'Control' | 'Support';
-export type NodeType = 'Active' | 'Passive' | 'GridEffect' | 'Ultimate';
-
-export interface SkillNode {
-    id: string;
-    name: string;
-    description: string;
-    type?: NodeType;
-    category: SkillCategory;
-    cooldown: number;
-    damage?: number;
-    tier: number;
-    prerequisites: string[];
-    effectId?: string;
-}
-
-export type Skill = SkillNode;
-
-export type SkillSequence = SkillNode[];
-
-export interface Unit {
-    id: string;
-    type: UnitType;
-    position: Position;
-    owner: Player;
-    hp: number;
-    maxHp: number;
-    equippedSkills: SkillSequence;
-    cooldowns: Record<string, number>; // skillId -> turns remaining
-}
+// Re-export Unit from combat/types to unify the type system
+export type Unit = CombatUnit;
 
 export type CellType = 'normal' | 'charged' | 'inert' | 'corrupted' | 'overclocked' | 'shielded' | 'obstacle' | 'void';
 
@@ -57,24 +12,6 @@ export interface Cell {
     type: CellType;
     isOccupied: boolean;
     unitId?: string;
-}
-
-export interface GameState {
-    grid: Cell[][];
-    units: Unit[];
-    turn: Player;
-    selectedUnitId: string | null;
-    validMoves: Position[];
-    cursor: Position;
-
-    // Actions
-    selectUnit: (unitId: string) => void;
-    moveUnit: (unitId: string, target: Position) => void;
-    endTurn: () => void;
-    initializeGame: () => void;
-    moveCursor: (dx: number, dy: number) => void;
-    setCursor: (pos: Position) => void;
-    moveHistory: Move[];
 }
 
 export interface Move {
@@ -87,4 +24,38 @@ export interface Move {
     to: Position;
     targetId?: string;
     timestamp: number;
+}
+
+export interface GameState {
+    setCursor: (pos: Position) => void;
+    moveHistory: Move[];
+
+    // Extended State (from gameStore)
+    gameStatus?: 'playing' | 'player_won' | 'opponent_won';
+    gameStats?: {
+        turns: number;
+        playerUnitsLost: number;
+        opponentUnitsLost: number;
+        playerKills: UnitType[];
+        opponentKills: UnitType[];
+    };
+    isMultiplayer?: boolean;
+    localPlayer?: 'player' | 'opponent';
+    turnTimeRemaining?: number;
+    turnTimeLimit?: number;
+    turnOrder?: string[];
+    activeUnitId?: string | null;
+    combatLogs?: any[]; // Avoiding circular dependency with CombatLog
+
+    // Extended Actions
+    executeSkill?: (unitId: string, skillId: string, target: Position) => void;
+    setTargetingMode?: (skillId: string | null) => void;
+    executeAITurn?: () => void;
+    checkGameOver?: () => void;
+    resetGame?: () => void;
+    setMultiplayerMode?: (isMultiplayer: boolean, localPlayer: 'player' | 'opponent') => void;
+    syncGameState?: (state: Partial<GameState>) => void;
+    addCombatLog?: (type: string, text: string) => void;
+    decrementTurnTime?: () => void;
+    resetTurnTimer?: () => void;
 }

@@ -45,13 +45,14 @@ export interface MovementEffect {
     id: string;
     name: string;
     description: string;
-    trigger: 'on_move' | 'on_stay' | 'on_end_turn' | 'conditional';
+    trigger: 'on_move' | 'on_stay' | 'on_end_turn' | 'conditional' | 'passive' | 'on_kill';
     condition?: (unit: any, from: Position, to: Position) => boolean;
     effect: {
         stat?: string;          // Which stat to modify
         value?: number;         // Modifier value
         duration?: number;      // How many turns
         type: 'buff' | 'debuff' | 'stance' | 'special';
+        description?: string;   // Description for special effects
     };
 }
 
@@ -72,7 +73,7 @@ export function calculateOrthogonalMoves(
     from: Position,
     range: number,
     units: any[],
-    _grid: any[][],
+    grid: any[][],
     canPassThrough: PassThroughType = 'none'
 ): Position[] {
     const moves: Position[] = [];
@@ -89,6 +90,9 @@ export function calculateOrthogonalMoves(
             const y = from.y + dir.dy * dist;
 
             if (x < 0 || x >= 10 || y < 0 || y >= 10) break;
+
+            // Check for obstacle
+            if (grid[y][x].type === 'obstacle') break;
 
             const isOccupied = units.some(u => {
                 const pos = u.pos || u.position;
@@ -111,7 +115,7 @@ export function calculateDiagonalMoves(
     from: Position,
     range: number,
     units: any[],
-    _grid: any[][],
+    grid: any[][],
     canPassThrough: PassThroughType = 'none'
 ): Position[] {
     const moves: Position[] = [];
@@ -128,6 +132,9 @@ export function calculateDiagonalMoves(
             const y = from.y + dir.dy * dist;
 
             if (x < 0 || x >= 10 || y < 0 || y >= 10) break;
+
+            // Check for obstacle
+            if (grid[y][x].type === 'obstacle') break;
 
             const isOccupied = units.some(u => {
                 const pos = u.pos || u.position;

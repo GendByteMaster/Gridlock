@@ -1,5 +1,6 @@
 import { Unit } from '../types';
 import { Position } from '../../types';
+import { UNIT_MOVEMENT_REGISTRY } from './UnitMovementRegistry';
 
 /**
  * Movement effect that can be applied to a unit
@@ -14,111 +15,103 @@ export interface ActiveMovementEffect {
     type: 'buff' | 'debuff' | 'stance' | 'special';
 }
 
+export type MovementEffectsState = Record<string, ActiveMovementEffect[]>;
+
 /**
- * Manager for movement-based effects
+ * Apply a movement effect to a unit
  */
-export class MovementEffectManager {
-    private activeEffects: Map<string, ActiveMovementEffect[]> = new Map();
+export function addMovementEffect(
+    state: MovementEffectsState,
+    unitId: string,
+    effect: ActiveMovementEffect
+): MovementEffectsState {
+    const newState = { ...state };
+    const effects = [...(newState[unitId] || [])];
 
-    /**
-     * Apply a movement effect to a unit
-     */
-    applyEffect(unitId: string, effect: ActiveMovementEffect): void {
-        if (!this.activeEffects.has(unitId)) {
-            this.activeEffects.set(unitId, []);
+    // Remove existing effect with same ID (replace)
+    const existingIndex = effects.findIndex(e => e.id === effect.id);
+    if (existingIndex >= 0) {
+        effects.splice(existingIndex, 1);
+    }
+
+    effects.push(effect);
+    newState[unitId] = effects;
+    return newState;
+}
+
+/**
+ * Remove an effect from a unit
+ */
+export function removeMovementEffect(
+    state: MovementEffectsState,
+    unitId: string,
+    effectId: string
+): MovementEffectsState {
+    if (!state[unitId]) return state;
+
+    const newState = { ...state };
+    const effects = newState[unitId].filter(e => e.id !== effectId);
+
+    if (effects.length === 0) {
+        delete newState[unitId];
+    } else {
+        newState[unitId] = effects;
+    }
+
+    return newState;
+}
+
+/**
+ * Decrease duration of all effects and remove expired ones
+ */
+export function tickMovementEffects(state: MovementEffectsState): MovementEffectsState {
+    const newState: MovementEffectsState = {};
+
+    Object.keys(state).forEach(unitId => {
+        const effects = state[unitId]
+            .map(e => ({ ...e, duration: e.duration - 1 }))
+            .filter(e => e.duration > 0);
+
+        if (effects.length > 0) {
+            newState[unitId] = effects;
         }
+    });
 
-        const effects = this.activeEffects.get(unitId)!;
+    return newState;
+}
 
-        // Remove existing effect with same ID (replace)
-        const existingIndex = effects.findIndex(e => e.id === effect.id);
-        if (existingIndex >= 0) {
-            effects.splice(existingIndex, 1);
-        }
+/**
+ * Calculate modified stats for a unit based on active effects
+ */
+export function applyEffectsToStats(unit: Unit, state: MovementEffectsState): Unit {
+    const effects = state[unit.id] || [];
+    if (effects.length === 0) return unit;
 
-        effects.push(effect);
-    }
+    const modifiedUnit = { ...unit };
+    const modifiedStats: any = { ...unit.base }; // Start from base stats
 
-    /**
-     * Remove an effect from a unit
-     */
-    removeEffect(unitId: string, effectId: string): void {
-        const effects = this.activeEffects.get(unitId);
-        if (!effects) return;
+    // Copy current values for non-base stats
+    modifiedStats.shield = unit.stats.shield;
+    modifiedStats.barrier = unit.stats.barrier;
 
-        const index = effects.findIndex(e => e.id === effectId);
-        if (index >= 0) {
-            effects.splice(index, 1);
-        }
-    }
+    for (const effect of effects) {
+        const statKey = effect.stat as keyof typeof modifiedStats;
+        const currentValue = modifiedStats[statKey];
 
-    /**
-     * Get all active effects for a unit
-     */
-    getEffects(unitId: string): ActiveMovementEffect[] {
-        return this.activeEffects.get(unitId) || [];
-    }
-
-    /**
-     * Decrease duration of all effects and remove expired ones
-     */
-    tickEffects(unitId: string): void {
-        const effects = this.activeEffects.get(unitId);
-        if (!effects) return;
-
-        // Decrease duration
-        effects.forEach(effect => {
-            effect.duration--;
-        });
-
-        // Remove expired effects
-        const remaining = effects.filter(e => e.duration > 0);
-        this.activeEffects.set(unitId, remaining);
-    }
-
-    /**
-     * Calculate modified stats for a unit based on active effects
-     */
-    applyEffectsToStats(unit: Unit): Unit {
-        const effects = this.getEffects(unit.id);
-        if (effects.length === 0) return unit;
-
-        const modifiedUnit = { ...unit };
-        const modifiedStats = { ...unit.stats };
-
-        for (const effect of effects) {
-            const statKey = effect.stat as keyof typeof modifiedStats;
-            const currentValue = modifiedStats[statKey];
-
-            if (typeof currentValue === 'number') {
-                // Apply percentage or flat modifier
-                if (effect.value > -1 && effect.value < 1) {
-                    // Percentage modifier
-                    modifiedStats[statKey] = currentValue * (1 + effect.value) as any;
-                } else {
-                    // Flat modifier
-                    modifiedStats[statKey] = (currentValue + effect.value) as any;
-                }
+        if (typeof currentValue === 'number') {
+            // Apply percentage or flat modifier
+            if (effect.value > -1 && effect.value < 1 && effect.value !== 0) {
+                // Percentage modifier (e.g. 0.10 for +10%)
+                modifiedStats[statKey] = (currentValue * (1 + effect.value)) as any;
+            } else {
+                // Flat modifier
+                modifiedStats[statKey] = (currentValue + effect.value) as any;
             }
         }
-
-        modifiedUnit.stats = modifiedStats;
-        return modifiedUnit;
     }
 
-    /**
-     * Clear all effects for a unit
-     */
-    clearEffects(unitId: string): void {
-        this.activeEffects.delete(unitId);
-    }
-
-    /**
-     * Clear all effects
-     */
-    clearAll(): void {
-        this.activeEffects.clear();
-    }
+    modifiedUnit.stats = modifiedStats;
+    return modifiedUnit;
 }
 
 /**
@@ -129,150 +122,58 @@ export function didUnitMove(prevPos: Position, currentPos: Position): boolean {
 }
 
 /**
- * Check if unit is adjacent to any enemy
- */
-export function isAdjacentToEnemy(unit: Unit, allUnits: Unit[]): boolean {
-    const enemies = allUnits.filter(u => u.owner !== unit.owner && u.stats.hp > 0);
-
-    for (const enemy of enemies) {
-        const dx = Math.abs(unit.pos.x - enemy.pos.x);
-        const dy = Math.abs(unit.pos.y - enemy.pos.y);
-
-        if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1) || (dx === 1 && dy === 1)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-/**
- * Check if position is on a capture point (placeholder)
- */
-export function isOnCapturePoint(pos: Position, grid: any[][]): boolean {
-    // TODO: Implement capture point detection
-    // For now, return false
-    return false;
-}
-
-/**
  * Apply movement effects based on unit type and action
  */
 export function applyMovementEffects(
     unit: Unit,
     prevPos: Position,
-    allUnits: Unit[],
-    grid: any[][],
-    effectManager: MovementEffectManager
-): void {
+    state: MovementEffectsState
+): MovementEffectsState {
+    let newState = state;
     const moved = didUnitMove(prevPos, unit.pos);
+    const moveDef = UNIT_MOVEMENT_REGISTRY[unit.type];
 
-    switch (unit.type) {
-        case 'Guardian':
-            if (!moved) {
-                // Стойка Стража: +10% DEF if didn't move
-                effectManager.applyEffect(unit.id, {
-                    id: 'guardian_stance',
-                    name: 'Стойка Стража',
-                    sourceUnitId: unit.id,
-                    stat: 'def',
-                    value: 0.10,
-                    duration: 1,
-                    type: 'stance'
-                });
-            } else {
-                // Remove stance if moved
-                effectManager.removeEffect(unit.id, 'guardian_stance');
-            }
-            break;
+    if (!moveDef || !moveDef.effects) return newState;
 
-        case 'Striker':
-            if (moved) {
-                // Агрессия: +10% ATK after moving
-                effectManager.applyEffect(unit.id, {
-                    id: 'striker_aggression',
-                    name: 'Агрессия',
-                    sourceUnitId: unit.id,
-                    stat: 'atk',
-                    value: 0.10,
-                    duration: 1,
-                    type: 'buff'
-                });
-            }
+    moveDef.effects.forEach(effectDef => {
+        let shouldApply = false;
+        let shouldRemove = false;
 
-            // Check if adjacent to enemy
-            if (isAdjacentToEnemy(unit, allUnits)) {
-                // Открыт: -1 DEF when next to enemy
-                effectManager.applyEffect(unit.id, {
-                    id: 'striker_exposed',
-                    name: 'Открыт',
-                    sourceUnitId: unit.id,
-                    stat: 'def',
-                    value: -1,
-                    duration: 1,
-                    type: 'debuff'
-                });
-            } else {
-                effectManager.removeEffect(unit.id, 'striker_exposed');
-            }
-            break;
-
-        case 'Scout':
-            if (moved && isOnCapturePoint(unit.pos, grid)) {
-                // Speed boost on capture point
-                effectManager.applyEffect(unit.id, {
-                    id: 'scout_speed_boost',
-                    name: 'Захват Точки',
-                    sourceUnitId: unit.id,
-                    stat: 'spd',
-                    value: 10,
-                    duration: 1,
-                    type: 'buff'
-                });
-            }
-            break;
-
-        case 'Sentinel':
-            if (moved) {
-                const dx = unit.pos.x - prevPos.x;
-                const dy = unit.pos.y - prevPos.y;
-
-                // Check if moved sideways
-                if (Math.abs(dx) > 0 && dy === 0) {
-                    // Точность: +5% accuracy when moving sideways
-                    effectManager.applyEffect(unit.id, {
-                        id: 'sentinel_precision',
-                        name: 'Точность',
-                        sourceUnitId: unit.id,
-                        stat: 'acc',
-                        value: 0.05,
-                        duration: 1,
-                        type: 'buff'
-                    });
+        // Check triggers
+        switch (effectDef.trigger) {
+            case 'on_move':
+                if (moved) shouldApply = true;
+                break;
+            case 'on_stay':
+                if (!moved) shouldApply = true;
+                else shouldRemove = true;
+                break;
+            case 'conditional':
+                if (effectDef.condition) {
+                    if (effectDef.condition(unit, prevPos, unit.pos)) {
+                        shouldApply = true;
+                    }
                 }
-            }
-            break;
+                break;
+            case 'passive':
+                shouldApply = true;
+                break;
+        }
 
-        case 'Sniper':
-            if (!moved) {
-                // Стационарная Позиция: +10% accuracy if didn't move
-                effectManager.applyEffect(unit.id, {
-                    id: 'sniper_stationary_bonus',
-                    name: 'Стационарная Позиция',
-                    sourceUnitId: unit.id,
-                    stat: 'acc',
-                    value: 0.10,
-                    duration: 1,
-                    type: 'stance'
-                });
-            } else {
-                effectManager.removeEffect(unit.id, 'sniper_stationary_bonus');
-            }
-            break;
+        if (shouldApply) {
+            newState = addMovementEffect(newState, unit.id, {
+                id: effectDef.id,
+                name: effectDef.name,
+                sourceUnitId: unit.id,
+                stat: effectDef.effect.stat || 'special',
+                value: effectDef.effect.value || 0,
+                duration: effectDef.effect.duration || 1,
+                type: effectDef.effect.type
+            });
+        } else if (shouldRemove) {
+            newState = removeMovementEffect(newState, unit.id, effectDef.id);
+        }
+    });
 
-        case 'Arcanist':
-            // TODO: Implement enhanced range if no skill used
-            // This requires tracking skill usage
-            break;
-    }
+    return newState;
 }

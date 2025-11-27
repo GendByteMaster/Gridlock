@@ -1,4 +1,4 @@
-import { UnitType } from '../types';
+import { UnitType, Position } from '../types/primitives';
 
 export type UnitId = string;
 export type SkillId = string;
@@ -104,6 +104,13 @@ export interface Unit {
     statuses: StatusInstance[];
     skills: SkillId[];
     modules: UnitModule[];
+
+    // Compatibility fields
+    position: Position; // Alias for pos
+    hp: number; // Alias for stats.hp
+    maxHp: number; // Alias for base.maxHp
+    equippedSkills: any[]; // Legacy
+    cooldowns: Record<string, number>; // Alias for runtime.cooldowns
 
     runtime: UnitRuntime;
 }

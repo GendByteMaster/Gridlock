@@ -195,7 +195,24 @@ export const SKILLS: Record<string, Skill> = {
     'burning_ground': { id: 'burning_ground', name: 'Burning Ground', description: 'Tile burns for 2 turns', category: 'Control', cooldown: 3, tier: 2, prerequisites: [] },
     'astral_pulse': { id: 'astral_pulse', name: 'Astral Pulse', description: 'Energy pulse in a short line', category: 'Offense', cooldown: 2, damage: 30, tier: 2, prerequisites: [] },
     'astral_shield': { id: 'astral_shield', name: 'Astral Shield', description: 'Absorb magic damage', category: 'Control', cooldown: 3, tier: 2, prerequisites: [] },
-    'warp_step': { id: 'warp_step', name: 'Warp Step', description: 'Teleport 1 tile', category: 'Mobility', cooldown: 2, tier: 2, prerequisites: [] }
+    'warp_step': { id: 'warp_step', name: 'Warp Step', description: 'Teleport 1 tile', category: 'Mobility', cooldown: 2, tier: 2, prerequisites: [] },
+
+    // Expansion Unit Skills (Added for Roster)
+    'double_strike': { id: 'double_strike', name: 'Double Strike', description: 'Attack twice in quick succession', category: 'Offense', cooldown: 3, damage: 20, tier: 2, prerequisites: [] },
+    'web': { id: 'web', name: 'Web', description: 'Root enemy in place', category: 'Control', cooldown: 3, tier: 2, prerequisites: [] },
+    'backstab': { id: 'backstab', name: 'Backstab', description: 'Critical damage from behind', category: 'Offense', cooldown: 3, damage: 60, tier: 2, prerequisites: [] },
+    'parry': { id: 'parry', name: 'Parry', description: 'Block the next attack', category: 'Control', cooldown: 3, tier: 2, prerequisites: [] },
+    'charge_unstoppable': { id: 'charge_unstoppable', name: 'Unstoppable Charge', description: 'Charge through obstacles', category: 'Mobility', cooldown: 4, damage: 30, tier: 3, prerequisites: [] },
+    'heal': { id: 'heal', name: 'Heal', description: 'Restore 40 HP to ally', category: 'Support', cooldown: 3, tier: 2, prerequisites: [] },
+    'headshot': { id: 'headshot', name: 'Headshot', description: 'Massive damage at long range', category: 'Offense', cooldown: 5, damage: 80, tier: 3, prerequisites: [] },
+    'summon_minion': { id: 'summon_minion', name: 'Summon Minion', description: 'Summon a weak ally', category: 'Support', cooldown: 5, tier: 3, prerequisites: [] },
+    'holy_smite': { id: 'holy_smite', name: 'Holy Smite', description: 'Divine damage to enemy', category: 'Offense', cooldown: 3, damage: 45, tier: 2, prerequisites: [] },
+    'jump': { id: 'jump', name: 'Jump', description: 'Leap to target location', category: 'Mobility', cooldown: 2, tier: 1, prerequisites: [] },
+    'inspire': { id: 'inspire', name: 'Inspire', description: 'Buff ally damage', category: 'Support', cooldown: 4, tier: 2, prerequisites: [] },
+    'command': { id: 'command', name: 'Command', description: 'Ally takes immediate turn', category: 'Support', cooldown: 6, tier: 3, prerequisites: [] },
+    'stomp': { id: 'stomp', name: 'Stomp', description: 'Stun all adjacent enemies', category: 'Control', cooldown: 4, damage: 20, tier: 3, prerequisites: [] },
+    'recon': { id: 'recon', name: 'Recon', description: 'Reveal large area', category: 'Support', cooldown: 0, tier: 1, prerequisites: [] },
+    'grenade': { id: 'grenade', name: 'Grenade', description: 'Ranged AoE damage', category: 'Offense', cooldown: 3, damage: 30, tier: 2, prerequisites: [] }
 };
 
 // Skill tree layout positions for React Flow

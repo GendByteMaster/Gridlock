@@ -23,57 +23,125 @@ const createInitialGrid = (): Cell[][] => {
 };
 
 const createInitialUnits = (): Unit[] => {
-    return [
-        // Player Units (Rows 8-9)
-        // Row 8 (Basic Units)
-        { id: 'p1', type: 'Guardian', position: { x: 0, y: 8 }, owner: 'player', hp: 120, maxHp: 120, equippedSkills: [SKILLS['shield_bash'], SKILLS['fortify']], cooldowns: {} },
-        { id: 'p2', type: 'Scout', position: { x: 1, y: 8 }, owner: 'player', hp: 80, maxHp: 80, equippedSkills: [SKILLS['dash'], SKILLS['spot']], cooldowns: {} },
-        { id: 'p3', type: 'Striker', position: { x: 2, y: 8 }, owner: 'player', hp: 100, maxHp: 100, equippedSkills: [SKILLS['slash'], SKILLS['lunge']], cooldowns: {} },
-        { id: 'p4', type: 'Arcanist', position: { x: 3, y: 8 }, owner: 'player', hp: 90, maxHp: 90, equippedSkills: [SKILLS['mana_burst'], SKILLS['empower_ally']], cooldowns: {} },
-        { id: 'p5', type: 'Vanguard', position: { x: 4, y: 8 }, owner: 'player', hp: 110, maxHp: 110, equippedSkills: [SKILLS['charge'], SKILLS['war_cry']], cooldowns: {} },
-        { id: 'p6', type: 'Sentinel', position: { x: 5, y: 8 }, owner: 'player', hp: 85, maxHp: 85, equippedSkills: [SKILLS['arrow_shot'], SKILLS['volley']], cooldowns: {} },
-        { id: 'p7', type: 'Mechanist', position: { x: 6, y: 8 }, owner: 'player', hp: 95, maxHp: 95, equippedSkills: [SKILLS['deploy_turret'], SKILLS['repair']], cooldowns: {} },
-        { id: 'p8', type: 'Monk', position: { x: 7, y: 8 }, owner: 'player', hp: 100, maxHp: 100, equippedSkills: [SKILLS['palm_strike'], SKILLS['meditate']], cooldowns: {} },
-        { id: 'p9', type: 'FrostAdept', position: { x: 8, y: 8 }, owner: 'player', hp: 90, maxHp: 90, equippedSkills: [SKILLS['frostbolt'], SKILLS['ice_nova']], cooldowns: {} },
-        { id: 'p10', type: 'WarImp', position: { x: 9, y: 8 }, owner: 'player', hp: 60, maxHp: 60, equippedSkills: [SKILLS['explosive_leap']], cooldowns: {} },
+    // Helper to create a base unit
+    const createUnit = (
+        id: string,
+        type: UnitType,
+        x: number,
+        y: number,
+        owner: 'player' | 'opponent'
+    ): Unit => {
+        const baseStats = {
+            hp: 100, maxHp: 100, atk: 10, def: 5, res: 5, spd: 5,
+            crit: 0.05, critDmg: 1.5, acc: 1.0, eva: 0.05
+        };
 
-        // Row 9 (Unique Units)
-        { id: 'p11', type: 'ChronoKnight', position: { x: 0, y: 9 }, owner: 'player', hp: 110, maxHp: 110, equippedSkills: [SKILLS['chrono_strike'], SKILLS['rewind']], cooldowns: {} },
-        { id: 'p12', type: 'StormTitan', position: { x: 1, y: 9 }, owner: 'player', hp: 130, maxHp: 130, equippedSkills: [SKILLS['titan_strike'], SKILLS['stormwall']], cooldowns: {} },
-        { id: 'p13', type: 'ShadowDancer', position: { x: 2, y: 9 }, owner: 'player', hp: 85, maxHp: 85, equippedSkills: [SKILLS['shadow_strike'], SKILLS['vanish']], cooldowns: {} },
-        { id: 'p14', type: 'SolarPriest', position: { x: 3, y: 9 }, owner: 'player', hp: 90, maxHp: 90, equippedSkills: [SKILLS['solar_beam'], SKILLS['sanctify']], cooldowns: {} },
-        { id: 'p15', type: 'VoidWalker', position: { x: 4, y: 9 }, owner: 'player', hp: 95, maxHp: 95, equippedSkills: [SKILLS['void_strike'], SKILLS['void_warp']], cooldowns: {} },
-        { id: 'p16', type: 'IronColossus', position: { x: 5, y: 9 }, owner: 'player', hp: 150, maxHp: 150, equippedSkills: [SKILLS['colossus_smash'], SKILLS['iron_skin']], cooldowns: {} },
-        { id: 'p17', type: 'ArcaneArcher', position: { x: 6, y: 9 }, owner: 'player', hp: 85, maxHp: 85, equippedSkills: [SKILLS['arcane_shot'], SKILLS['piercing_shot']], cooldowns: {} },
-        { id: 'p18', type: 'BoneReaper', position: { x: 7, y: 9 }, owner: 'player', hp: 100, maxHp: 100, equippedSkills: [SKILLS['scythe_sweep'], SKILLS['soul_harvest']], cooldowns: {} },
-        { id: 'p19', type: 'EmberWitch', position: { x: 8, y: 9 }, owner: 'player', hp: 90, maxHp: 90, equippedSkills: [SKILLS['magma_ball'], SKILLS['burning_ground']], cooldowns: {} },
-        { id: 'p20', type: 'AstralSentinel', position: { x: 9, y: 9 }, owner: 'player', hp: 95, maxHp: 95, equippedSkills: [SKILLS['astral_pulse'], SKILLS['astral_shield']], cooldowns: {} },
+        // Apply type-specific base stats override
+        switch (type) {
+            case 'Guardian': baseStats.maxHp = 120; baseStats.def = 15; break;
+            case 'Scout': baseStats.maxHp = 80; baseStats.spd = 8; break;
+            case 'Striker': baseStats.atk = 15; break;
+            case 'Arcanist': baseStats.res = 15; baseStats.atk = 12; break;
+            case 'Vanguard': baseStats.maxHp = 110; baseStats.atk = 12; break;
+            case 'Sentinel': baseStats.acc = 1.1; baseStats.atk = 12; break;
+            case 'Mechanist': baseStats.maxHp = 95; break;
+            case 'Monk': baseStats.eva = 0.15; break;
+            case 'FrostAdept': baseStats.res = 12; break;
+            case 'WarImp': baseStats.maxHp = 60; baseStats.spd = 7; break;
+            case 'IronColossus': baseStats.maxHp = 150; baseStats.def = 20; break;
+            case 'StormTitan': baseStats.maxHp = 130; baseStats.atk = 18; break;
+        }
+        baseStats.hp = baseStats.maxHp;
 
-        // Opponent Units (Rows 0-1)
-        // Row 1 (Basic Units)
-        { id: 'e1', type: 'Guardian', position: { x: 0, y: 1 }, owner: 'opponent', hp: 120, maxHp: 120, equippedSkills: [SKILLS['shield_bash'], SKILLS['fortify']], cooldowns: {} },
-        { id: 'e2', type: 'Scout', position: { x: 1, y: 1 }, owner: 'opponent', hp: 80, maxHp: 80, equippedSkills: [SKILLS['dash'], SKILLS['spot']], cooldowns: {} },
-        { id: 'e3', type: 'Striker', position: { x: 2, y: 1 }, owner: 'opponent', hp: 100, maxHp: 100, equippedSkills: [SKILLS['slash'], SKILLS['lunge']], cooldowns: {} },
-        { id: 'e4', type: 'Arcanist', position: { x: 3, y: 1 }, owner: 'opponent', hp: 90, maxHp: 90, equippedSkills: [SKILLS['mana_burst'], SKILLS['empower_ally']], cooldowns: {} },
-        { id: 'e5', type: 'Vanguard', position: { x: 4, y: 1 }, owner: 'opponent', hp: 110, maxHp: 110, equippedSkills: [SKILLS['charge'], SKILLS['war_cry']], cooldowns: {} },
-        { id: 'e6', type: 'Sentinel', position: { x: 5, y: 1 }, owner: 'opponent', hp: 85, maxHp: 85, equippedSkills: [SKILLS['arrow_shot'], SKILLS['volley']], cooldowns: {} },
-        { id: 'e7', type: 'Mechanist', position: { x: 6, y: 1 }, owner: 'opponent', hp: 95, maxHp: 95, equippedSkills: [SKILLS['deploy_turret'], SKILLS['repair']], cooldowns: {} },
-        { id: 'e8', type: 'Monk', position: { x: 7, y: 1 }, owner: 'opponent', hp: 100, maxHp: 100, equippedSkills: [SKILLS['palm_strike'], SKILLS['meditate']], cooldowns: {} },
-        { id: 'e9', type: 'FrostAdept', position: { x: 8, y: 1 }, owner: 'opponent', hp: 90, maxHp: 90, equippedSkills: [SKILLS['frostbolt'], SKILLS['ice_nova']], cooldowns: {} },
-        { id: 'e10', type: 'WarImp', position: { x: 9, y: 1 }, owner: 'opponent', hp: 60, maxHp: 60, equippedSkills: [SKILLS['explosive_leap']], cooldowns: {} },
+        return {
+            id,
+            type,
+            owner,
+            level: 1,
+            pos: { x, y },
+            base: baseStats,
+            stats: { ...baseStats, shield: 0, barrier: 0 },
+            resistances: { fire: 0, frost: 0, lightning: 0, poison: 0, arcane: 0, void: 0 },
+            statuses: [],
+            skills: [],
+            modules: [],
+            runtime: {
+                initiative: 0,
+                cooldowns: {},
+                isStunned: false,
+                isFrozen: false,
+                isSilenced: false,
+                isRooted: false,
+                isSleeping: false,
+                isCharmed: false,
+                actionPoints: 1,
+                movePoints: 1,
+                comboCount: 0,
+                hasActed: false,
+                hasMoved: false,
+                isReacting: false,
+                lastActionTimestamp: 0
+            },
+            // Compatibility fields
+            position: { x, y },
+            hp: baseStats.maxHp,
+            maxHp: baseStats.maxHp,
+            equippedSkills: [],
+            cooldowns: {}
+        } as any;
+    };
 
-        // Row 0 (Unique Units)
-        { id: 'e11', type: 'ChronoKnight', position: { x: 0, y: 0 }, owner: 'opponent', hp: 110, maxHp: 110, equippedSkills: [SKILLS['chrono_strike'], SKILLS['rewind']], cooldowns: {} },
-        { id: 'e12', type: 'StormTitan', position: { x: 1, y: 0 }, owner: 'opponent', hp: 130, maxHp: 130, equippedSkills: [SKILLS['titan_strike'], SKILLS['stormwall']], cooldowns: {} },
-        { id: 'e13', type: 'ShadowDancer', position: { x: 2, y: 0 }, owner: 'opponent', hp: 85, maxHp: 85, equippedSkills: [SKILLS['shadow_strike'], SKILLS['vanish']], cooldowns: {} },
-        { id: 'e14', type: 'SolarPriest', position: { x: 3, y: 0 }, owner: 'opponent', hp: 90, maxHp: 90, equippedSkills: [SKILLS['solar_beam'], SKILLS['sanctify']], cooldowns: {} },
-        { id: 'e15', type: 'VoidWalker', position: { x: 4, y: 0 }, owner: 'opponent', hp: 95, maxHp: 95, equippedSkills: [SKILLS['void_strike'], SKILLS['void_warp']], cooldowns: {} },
-        { id: 'e16', type: 'IronColossus', position: { x: 5, y: 0 }, owner: 'opponent', hp: 150, maxHp: 150, equippedSkills: [SKILLS['colossus_smash'], SKILLS['iron_skin']], cooldowns: {} },
-        { id: 'e17', type: 'ArcaneArcher', position: { x: 6, y: 0 }, owner: 'opponent', hp: 85, maxHp: 85, equippedSkills: [SKILLS['arcane_shot'], SKILLS['piercing_shot']], cooldowns: {} },
-        { id: 'e18', type: 'BoneReaper', position: { x: 7, y: 0 }, owner: 'opponent', hp: 100, maxHp: 100, equippedSkills: [SKILLS['scythe_sweep'], SKILLS['soul_harvest']], cooldowns: {} },
-        { id: 'e19', type: 'EmberWitch', position: { x: 8, y: 0 }, owner: 'opponent', hp: 90, maxHp: 90, equippedSkills: [SKILLS['magma_ball'], SKILLS['burning_ground']], cooldowns: {} },
-        { id: 'e20', type: 'AstralSentinel', position: { x: 9, y: 0 }, owner: 'opponent', hp: 95, maxHp: 95, equippedSkills: [SKILLS['astral_pulse'], SKILLS['astral_shield']], cooldowns: {} },
-    ];
+    const units: Unit[] = [];
+
+    // Player Row 8
+    units.push(createUnit('p1', 'Guardian', 0, 8, 'player'));
+    units.push(createUnit('p2', 'Scout', 1, 8, 'player'));
+    units.push(createUnit('p3', 'Striker', 2, 8, 'player'));
+    units.push(createUnit('p4', 'Arcanist', 3, 8, 'player'));
+    units.push(createUnit('p5', 'Vanguard', 4, 8, 'player'));
+    units.push(createUnit('p6', 'Sentinel', 5, 8, 'player'));
+    units.push(createUnit('p7', 'Mechanist', 6, 8, 'player'));
+    units.push(createUnit('p8', 'Monk', 7, 8, 'player'));
+    units.push(createUnit('p9', 'FrostAdept', 8, 8, 'player'));
+    units.push(createUnit('p10', 'WarImp', 9, 8, 'player'));
+
+    // Player Row 9 (Heroes)
+    units.push(createUnit('p11', 'ChronoKnight', 0, 9, 'player'));
+    units.push(createUnit('p12', 'StormTitan', 1, 9, 'player'));
+    units.push(createUnit('p13', 'ShadowDancer', 2, 9, 'player'));
+    units.push(createUnit('p14', 'SolarPriest', 3, 9, 'player'));
+    units.push(createUnit('p15', 'VoidWalker', 4, 9, 'player'));
+    units.push(createUnit('p16', 'IronColossus', 5, 9, 'player'));
+    units.push(createUnit('p17', 'ArcaneArcher', 6, 9, 'player'));
+    units.push(createUnit('p18', 'BoneReaper', 7, 9, 'player'));
+    units.push(createUnit('p19', 'EmberWitch', 8, 9, 'player'));
+    units.push(createUnit('p20', 'AstralSentinel', 9, 9, 'player'));
+
+    // Opponent Row 1
+    units.push(createUnit('e1', 'Guardian', 0, 1, 'opponent'));
+    units.push(createUnit('e2', 'Scout', 1, 1, 'opponent'));
+    units.push(createUnit('e3', 'Striker', 2, 1, 'opponent'));
+    units.push(createUnit('e4', 'Arcanist', 3, 1, 'opponent'));
+    units.push(createUnit('e5', 'Vanguard', 4, 1, 'opponent'));
+    units.push(createUnit('e6', 'Sentinel', 5, 1, 'opponent'));
+    units.push(createUnit('e7', 'Mechanist', 6, 1, 'opponent'));
+    units.push(createUnit('e8', 'Monk', 7, 1, 'opponent'));
+    units.push(createUnit('e9', 'FrostAdept', 8, 1, 'opponent'));
+    units.push(createUnit('e10', 'WarImp', 9, 1, 'opponent'));
+
+    // Opponent Row 0 (Heroes)
+    units.push(createUnit('e11', 'ChronoKnight', 0, 0, 'opponent'));
+    units.push(createUnit('e12', 'StormTitan', 1, 0, 'opponent'));
+    units.push(createUnit('e13', 'ShadowDancer', 2, 0, 'opponent'));
+    units.push(createUnit('e14', 'SolarPriest', 3, 0, 'opponent'));
+    units.push(createUnit('e15', 'VoidWalker', 4, 0, 'opponent'));
+    units.push(createUnit('e16', 'IronColossus', 5, 0, 'opponent'));
+    units.push(createUnit('e17', 'ArcaneArcher', 6, 0, 'opponent'));
+    units.push(createUnit('e18', 'BoneReaper', 7, 0, 'opponent'));
+    units.push(createUnit('e19', 'EmberWitch', 8, 0, 'opponent'));
+    units.push(createUnit('e20', 'AstralSentinel', 9, 0, 'opponent'));
+
+    return units;
 };
 
 interface GameStats {
@@ -431,8 +499,34 @@ export const useGameStore = create<ExtendedGameState>((set, get) => ({
                 const turretUnit: Unit = {
                     id: turretId,
                     type: 'Turret',
-                    position: target,
                     owner: unit.owner,
+                    level: 1,
+                    pos: target,
+                    base: { hp: 50, maxHp: 50, atk: 10, def: 5, res: 5, spd: 0, crit: 0, critDmg: 1.5, acc: 1.0, eva: 0 },
+                    stats: { hp: 50, maxHp: 50, atk: 10, def: 5, res: 5, spd: 0, crit: 0, critDmg: 1.5, acc: 1.0, eva: 0, shield: 0, barrier: 0 },
+                    resistances: { fire: 0, frost: 0, lightning: 0, poison: 0, arcane: 0, void: 0 },
+                    statuses: [],
+                    skills: [],
+                    modules: [],
+                    runtime: {
+                        initiative: 0,
+                        cooldowns: {},
+                        isStunned: false,
+                        isFrozen: false,
+                        isSilenced: false,
+                        isRooted: true,
+                        isSleeping: false,
+                        isCharmed: false,
+                        actionPoints: 1,
+                        movePoints: 0,
+                        comboCount: 0,
+                        hasActed: false,
+                        hasMoved: false,
+                        isReacting: false,
+                        lastActionTimestamp: 0
+                    },
+                    // Compatibility
+                    position: target,
                     hp: 50,
                     maxHp: 50,
                     equippedSkills: [],
