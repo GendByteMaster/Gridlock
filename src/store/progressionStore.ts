@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { apiClient } from '../api/client';
 
 interface PlayerStats {
     level: number;
@@ -15,13 +16,15 @@ interface UnlockedSkills {
 }
 
 interface ProgressionState {
+    userId: string | null;
     playerStats: PlayerStats;
     unlockedSkills: UnlockedSkills;
-    addXP: (amount: number) => void;
-    addWin: () => void;
-    addLoss: () => void;
-    unlockSkill: (unitType: string, skillId: string) => void;
-    spendSkillPoint: () => boolean;
+
+    initialize: () => Promise<void>;
+    addXP: (amount: number) => Promise<void>;
+    addWin: () => Promise<void>;
+    addLoss: () => Promise<void>;
+    unlockSkill: (unitType: string, skillId: string) => Promise<void>;
     resetProgress: () => void;
 }
 
@@ -46,92 +49,123 @@ const initialUnlockedSkills: UnlockedSkills = {
 export const useProgressionStore = create<ProgressionState>()(
     persist(
         (set, get) => ({
+            userId: null,
             playerStats: initialStats,
             unlockedSkills: initialUnlockedSkills,
 
-            addXP: (amount: number) => {
-                const { playerStats } = get();
-                let newXP = playerStats.xp + amount;
-                let newLevel = playerStats.level;
-                let newSkillPoints = playerStats.skillPoints;
-                let xpToNext = playerStats.xpToNextLevel;
-
-                // Level up logic
-                while (newXP >= xpToNext) {
-                    newXP -= xpToNext;
-                    newLevel++;
-                    newSkillPoints += 2; // Gain 2 skill points per level
-                    xpToNext = Math.floor(100 * Math.pow(1.5, newLevel - 1)); // Exponential scaling
+            initialize: async () => {
+                let { userId } = get();
+                if (!userId) {
+                    const username = `Player_${Math.floor(Math.random() * 10000)}`;
+                    try {
+                        const user = await apiClient.post('/progression/login', { username });
+                        userId = user._id || user.id;
+                        set({ userId });
+                    } catch (e) {
+                        console.error("Login failed", e);
+                        return;
+                    }
                 }
 
-                set({
-                    playerStats: {
-                        ...playerStats,
-                        level: newLevel,
-                        xp: newXP,
-                        xpToNextLevel: xpToNext,
-                        skillPoints: newSkillPoints
+                if (userId) {
+                    try {
+                        const user = await apiClient.get(`/progression/${userId}`);
+                        set({
+                            playerStats: {
+                                level: user.level,
+                                xp: user.xp,
+                                xpToNextLevel: user.xp_to_next_level,
+                                skillPoints: user.skill_points,
+                                wins: user.wins,
+                                losses: user.losses
+                            },
+                            unlockedSkills: user.unlocked_skills
+                        });
+                    } catch (e) {
+                        console.error("Fetch profile failed", e);
                     }
-                });
-            },
-
-            addWin: () => {
-                set(state => ({
-                    playerStats: {
-                        ...state.playerStats,
-                        wins: state.playerStats.wins + 1
-                    }
-                }));
-                get().addXP(50); // Award XP for winning
-            },
-
-            addLoss: () => {
-                set(state => ({
-                    playerStats: {
-                        ...state.playerStats,
-                        losses: state.playerStats.losses + 1
-                    }
-                }));
-                get().addXP(20); // Award some XP even for losing
-            },
-
-            unlockSkill: (unitType: string, skillId: string) => {
-                const { unlockedSkills } = get();
-                const unitSkills = unlockedSkills[unitType] || [];
-
-                if (!unitSkills.includes(skillId)) {
-                    set({
-                        unlockedSkills: {
-                            ...unlockedSkills,
-                            [unitType]: [...unitSkills, skillId]
-                        }
-                    });
                 }
             },
 
-            spendSkillPoint: () => {
-                const { playerStats } = get();
-                if (playerStats.skillPoints > 0) {
+            addXP: async (amount: number) => {
+                // Placeholder if needed, currently handled by addWin/addLoss
+            },
+
+            addWin: async () => {
+                const { userId } = get();
+                if (!userId) return;
+                try {
+                    const user = await apiClient.post(`/progression/${userId}/game-result`, { result: 'win' });
                     set({
                         playerStats: {
-                            ...playerStats,
-                            skillPoints: playerStats.skillPoints - 1
-                        }
+                            level: user.level,
+                            xp: user.xp,
+                            xpToNextLevel: user.xp_to_next_level,
+                            skillPoints: user.skill_points,
+                            wins: user.wins,
+                            losses: user.losses
+                        },
+                        unlockedSkills: user.unlocked_skills
                     });
-                    return true;
+                } catch (e) {
+                    console.error("addWin failed", e);
                 }
-                return false;
+            },
+
+            addLoss: async () => {
+                const { userId } = get();
+                if (!userId) return;
+                try {
+                    const user = await apiClient.post(`/progression/${userId}/game-result`, { result: 'loss' });
+                    set({
+                        playerStats: {
+                            level: user.level,
+                            xp: user.xp,
+                            xpToNextLevel: user.xp_to_next_level,
+                            skillPoints: user.skill_points,
+                            wins: user.wins,
+                            losses: user.losses
+                        },
+                        unlockedSkills: user.unlocked_skills
+                    });
+                } catch (e) {
+                    console.error("addLoss failed", e);
+                }
+            },
+
+            unlockSkill: async (unitType: string, skillId: string) => {
+                const { userId } = get();
+                if (!userId) return;
+                try {
+                    const user = await apiClient.post(`/progression/${userId}/unlock-skill`, { unit_type: unitType, skill_id: skillId });
+                    set({
+                        playerStats: {
+                            level: user.level,
+                            xp: user.xp,
+                            xpToNextLevel: user.xp_to_next_level,
+                            skillPoints: user.skill_points,
+                            wins: user.wins,
+                            losses: user.losses
+                        },
+                        unlockedSkills: user.unlocked_skills
+                    });
+                } catch (e) {
+                    console.error("unlockSkill failed", e);
+                    throw e; // Re-throw to let component handle error (e.g. not enough points)
+                }
             },
 
             resetProgress: () => {
                 set({
+                    userId: null,
                     playerStats: initialStats,
                     unlockedSkills: initialUnlockedSkills
                 });
             }
         }),
         {
-            name: 'gridlock-progression'
+            name: 'gridlock-progression',
+            partialize: (state) => ({ userId: state.userId }),
         }
     )
 );

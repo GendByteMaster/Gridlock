@@ -35,12 +35,12 @@ class SocketService {
         }
     }
 
-    createRoom(playerName: string, callback: (roomId: string) => void): void {
-        this.socket?.emit('createRoom', playerName, callback);
+    createRoom(playerName: string, userId: string | undefined, unlockedSkills: any, callback: (roomId: string) => void): void {
+        this.socket?.emit('createRoom', playerName, userId, unlockedSkills, callback);
     }
 
-    joinRoom(roomId: string, playerName: string, callback: (success: boolean, room?: any) => void): void {
-        this.socket?.emit('joinRoom', roomId, playerName, callback);
+    joinRoom(roomId: string, playerName: string, userId: string | undefined, unlockedSkills: any, callback: (success: boolean, room?: any) => void): void {
+        this.socket?.emit('joinRoom', roomId, playerName, userId, unlockedSkills, callback);
     }
 
     leaveRoom(): void {
@@ -53,6 +53,10 @@ class SocketService {
 
     sendGameAction(action: GameAction): void {
         this.socket?.emit('gameAction', action);
+    }
+
+    sendGameEnded(winnerSocketId: string): void {
+        this.socket?.emit('gameEnded', winnerSocketId);
     }
 
     onRoomCreated(callback: (roomId: string) => void): void {
@@ -113,6 +117,10 @@ class SocketService {
 
     get isConnected(): boolean {
         return this.socket?.connected ?? false;
+    }
+
+    get socketId(): string | undefined {
+        return this.socket?.id;
     }
 }
 

@@ -9,22 +9,40 @@ interface EnhancedSkillTreeProps {
     onBack: () => void;
 }
 
-const unitTypes = ['Vanguard', 'Coreframe', 'Sentinel', 'Arcanist', 'Phantom', 'Fabricator'];
+const unitTypes = [
+    'Guardian', 'Scout', 'Striker', 'Arcanist', 'Vanguard',
+    'Sentinel', 'Mechanist', 'Monk', 'FrostAdept', 'WarImp',
+    'Coreframe', 'Phantom', 'Fabricator', 'Bastion', 'Weaver',
+    'Spectre', 'Ronin', 'Juggernaut', 'Medic', 'Sniper',
+    'Engineer', 'Summoner', 'Assassin', 'Templar', 'Dragoon',
+    'Valkyrie', 'Overlord', 'Titan', 'Bomber',
+    'ChronoKnight', 'StormTitan', 'ShadowDancer', 'SolarPriest', 'VoidWalker',
+    'IronColossus', 'ArcaneArcher', 'BoneReaper', 'EmberWitch', 'AstralSentinel'
+];
 
 const EnhancedSkillTree: React.FC<EnhancedSkillTreeProps> = ({ onBack }) => {
+    const { unlockedSkills, playerStats, unlockSkill } = useProgressionStore();
     const [selectedUnit, setSelectedUnit] = useState<string>('Vanguard');
-    const { playerStats, unlockedSkills, unlockSkill, spendSkillPoint } = useProgressionStore();
 
-    const unitSkills = unlockedSkills[selectedUnit] || [];
     const allSkills = Object.values(SKILLS);
 
-    const handleUnlockSkill = (skillId: string) => {
-        if (spendSkillPoint()) {
-            unlockSkill(selectedUnit, skillId);
-        }
+    const isSkillUnlocked = (skillId: string) => {
+        const unitSkills = unlockedSkills[selectedUnit] || [];
+        return unitSkills.includes(skillId);
     };
 
-    const isSkillUnlocked = (skillId: string) => unitSkills.includes(skillId);
+    const canUnlockSkill = (skillId: string) => {
+        const skill = SKILLS[skillId];
+        if (!skill) return false;
+        if (isSkillUnlocked(skillId)) return false;
+        return skill.prerequisites.every(prereqId => isSkillUnlocked(prereqId));
+    };
+
+    const handleUnlockSkill = async (skillId: string) => {
+        if (canUnlockSkill(skillId) && playerStats.skillPoints > 0) {
+            await unlockSkill(selectedUnit, skillId);
+        }
+    };
 
     const getCategoryColor = (category: string) => {
         switch (category) {

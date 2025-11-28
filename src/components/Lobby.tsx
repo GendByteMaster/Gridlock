@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { socketService } from '../services/socket';
+import { useProgressionStore } from '../store/progressionStore';
 import { clsx } from 'clsx';
 import { Users, Copy, Check, Wifi, ArrowLeft, Play, Globe, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -45,7 +46,9 @@ const Lobby: React.FC<LobbyProps> = ({ onGameStart, onBack }) => {
     const handleCreateRoom = () => {
         if (!playerName.trim()) return;
 
-        socketService.createRoom(playerName, (newRoomId) => {
+        const { userId, unlockedSkills } = useProgressionStore.getState();
+
+        socketService.createRoom(playerName, userId || undefined, unlockedSkills, (newRoomId) => {
             setRoomId(newRoomId);
             setIsHost(true);
             setView('waiting');
@@ -55,7 +58,9 @@ const Lobby: React.FC<LobbyProps> = ({ onGameStart, onBack }) => {
     const handleJoinRoom = () => {
         if (!playerName.trim() || !joinRoomInput.trim()) return;
 
-        socketService.joinRoom(joinRoomInput.toUpperCase(), playerName, (success, room) => {
+        const { userId, unlockedSkills } = useProgressionStore.getState();
+
+        socketService.joinRoom(joinRoomInput.toUpperCase(), playerName, userId || undefined, unlockedSkills, (success, room) => {
             if (success && room) {
                 setRoomId(joinRoomInput.toUpperCase());
                 setCurrentRoom(room);

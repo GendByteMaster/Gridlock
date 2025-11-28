@@ -22,7 +22,7 @@ const unitTypes = [
 ];
 
 const SkillTree: React.FC<SkillTreeProps> = ({ onBack }) => {
-    const { unlockedSkills, playerStats, unlockSkill, spendSkillPoint } = useProgressionStore();
+    const { unlockedSkills, playerStats, unlockSkill } = useProgressionStore();
     const [selectedUnit, setSelectedUnit] = useState<string>('Vanguard');
     const [hoveredSkillId, setHoveredSkillId] = useState<string | null>(null);
     const [showScrollTop, setShowScrollTop] = useState(false);
@@ -67,28 +67,24 @@ const SkillTree: React.FC<SkillTreeProps> = ({ onBack }) => {
         }
     }, [selectedUnit]);
 
-    // Check scroll on mount
-    useEffect(() => {
-        handleScroll();
-    }, []);
-
-    const unitSkills = unlockedSkills[selectedUnit] || [];
-
-    const isSkillUnlocked = (skillId: string) => unitSkills.includes(skillId);
+    const isSkillUnlocked = (skillId: string) => {
+        const unitSkills = unlockedSkills[selectedUnit] || [];
+        return unitSkills.includes(skillId);
+    };
 
     const canUnlockSkill = (skillId: string) => {
         const skill = SKILLS[skillId];
-        if (!skill || isSkillUnlocked(skillId)) return false;
+        if (!skill) return false;
+        if (isSkillUnlocked(skillId)) return false;
         return skill.prerequisites.every(prereqId => isSkillUnlocked(prereqId));
     };
 
-    const handleUnlockSkill = (skillId: string) => {
-        if (canUnlockSkill(skillId) && spendSkillPoint()) {
-            unlockSkill(selectedUnit, skillId);
-            soundManager.playSkillExecute();
+    const handleUnlockSkill = async (skillId: string) => {
+        if (canUnlockSkill(skillId) && playerStats.skillPoints > 0) {
+            await unlockSkill(selectedUnit, skillId);
+            soundManager.playUnlock();
         }
     };
-
     const getCategoryColor = (category: string) => {
         switch (category) {
             case 'Offense': return 'text-accent-red';

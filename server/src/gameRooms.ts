@@ -3,13 +3,15 @@ import { Room, Player } from './types';
 class GameRoomManager {
     private rooms: Map<string, Room> = new Map();
 
-    createRoom(playerId: string, socketId: string, playerName: string): string {
+    createRoom(playerId: string, socketId: string, playerName: string, userId?: string, unlockedSkills?: any): string {
         const roomId = this.generateRoomId();
 
         const player: Player = {
             id: playerId,
             socketId,
             name: playerName,
+            userId,
+            unlockedSkills,
             side: 'player',
             ready: false
         };
@@ -26,7 +28,7 @@ class GameRoomManager {
         return roomId;
     }
 
-    joinRoom(roomId: string, playerId: string, socketId: string, playerName: string): Room | null {
+    joinRoom(roomId: string, playerId: string, socketId: string, playerName: string, userId?: string, unlockedSkills?: any): Room | null {
         const room = this.rooms.get(roomId);
 
         if (!room) return null;
@@ -37,6 +39,8 @@ class GameRoomManager {
             id: playerId,
             socketId,
             name: playerName,
+            userId,
+            unlockedSkills,
             side: 'opponent',
             ready: false
         };

@@ -7,6 +7,9 @@ export interface Player {
     id: string;
     socketId: string;
     name: string;
+    userId?: string; // Database ID from Python backend
+    level?: number;
+    unlockedSkills?: Record<string, string[]>;
     side: 'player' | 'opponent';
     ready: boolean;
 }
@@ -38,9 +41,10 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-    createRoom: (playerName: string, callback: (roomId: string) => void) => void;
-    joinRoom: (roomId: string, playerName: string, callback: (success: boolean, room?: Room) => void) => void;
+    createRoom: (playerName: string, userId: string | undefined, unlockedSkills: any, callback: (roomId: string) => void) => void;
+    joinRoom: (roomId: string, playerName: string, userId: string | undefined, unlockedSkills: any, callback: (success: boolean, room?: Room) => void) => void;
     leaveRoom: () => void;
     playerReady: () => void;
     gameAction: (action: GameAction) => void;
+    gameEnded: (winnerSocketId: string) => void;
 }

@@ -1,0 +1,43 @@
+[project]
+name = "gridlock-backend"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "motor>=3.3.0",
+    "beanie>=1.25.0",
+    "pydantic>=2.0",
+    "pydantic-settings",
+    "redis>=5.0",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest",
+    "pytest-asyncio",
+    "httpx",
+    "ruff",
+    "black",
+    "mypy",
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py313"] # Python 3.14 not yet fully supported by black target-version enum in some versions, using 3.13 as proxy or latest available
+
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+select = ["E", "F", "I", "B"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.13" # Using 3.13 as proxy for 3.14 if needed, or 3.14 if supported
+strict = true
+ignore_missing_imports = true
+
+# Settings for the run
+[tool.pyright]
+pythonVersion = "3.14"
+reportMissingTypeStubs = true

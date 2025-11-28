@@ -78,6 +78,13 @@ class SoundManager {
         osc.stop(this.context.currentTime + 0.3);
     }
 
+    public playUnlock() {
+        if (this.isMuted) return;
+        // Success sound
+        this.createOscillator('sine', 600, 0.1, 0.2);
+        setTimeout(() => this.createOscillator('sine', 800, 0.2, 0.2), 100);
+    }
+
     public toggleMute() {
         this.isMuted = !this.isMuted;
     }

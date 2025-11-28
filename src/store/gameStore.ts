@@ -3,6 +3,7 @@ import { GameState, Cell, Unit, Position, UnitType } from '../types';
 import { SKILLS } from '../data/skills';
 import { executeAITurn as executeAITurnLogic } from '../ai/opponentAI';
 import { calculateUnitMoves } from '../combat/movement/UnitMovementRegistry';
+import { socketService } from '../services/socket';
 
 const BOARD_SIZE = 10;
 
@@ -624,17 +625,65 @@ export const useGameStore = create<ExtendedGameState>((set, get) => ({
     },
 
     checkGameOver: () => {
-        const { units, gameStatus } = get();
+        const { units, gameStatus, isMultiplayer, localPlayer } = get();
 
         if (gameStatus !== 'playing') return;
 
         const playerUnits = units.filter(u => u.owner === 'player');
         const opponentUnits = units.filter(u => u.owner === 'opponent');
 
+        let winner: 'player' | 'opponent' | null = null;
+
         if (playerUnits.length === 0) {
+            winner = 'opponent';
             set({ gameStatus: 'opponent_won' });
         } else if (opponentUnits.length === 0) {
+            winner = 'player';
             set({ gameStatus: 'player_won' });
+        }
+
+        if (winner && isMultiplayer) {
+            // Only the winner needs to report, or both can report and server handles it.
+            // But we need to know who won.
+            // If I am the winner, I report it.
+            if (winner === localPlayer) {
+                // We need to send the socket ID of the winner.
+                // Since we don't have easy access to our own socket ID here without storing it,
+                // we can just emit "gameEnded" and let the server figure out who sent it.
+                // But the server expects winnerSocketId.
+                // Let's change the server event to just "I won" or "I lost" or just "Game Over" and server checks state.
+                // But wait, the server doesn't track unit deaths fully authoritatively yet (it trusts clients).
+                // So the client needs to say "I won".
+
+                // Actually, the server implementation I wrote expects `winnerSocketId`.
+                // `socket.on('gameEnded', (winnerSocketId: string) => { ... })`
+                // So I should send the winner's socket ID.
+                // But I don't know the socket IDs here easily.
+
+                // Alternative: The server knows the sender's socket ID.
+                // If I send "gameEnded", the server knows *I* sent it.
+                // If I won, I should send "gameEnded" with MY socket ID? Or just "gameEnded" and server assumes sender is winner?
+                // The current server code: `const winner = room.players.find(p => p.socketId === winnerSocketId);`
+                // So I need to send the correct socket ID.
+
+                // Let's assume for now that we don't have the socket ID in the store.
+                // I should probably update `socketService` to store the socket ID or expose it.
+                // Or I can update the server to accept a simpler message.
+
+                // Let's update the server to not require an argument, and assume the sender is the winner?
+                // No, what if the loser disconnects?
+
+                // Let's update `socketService` to expose `socket.id`.
+                // But `socketService` is a class instance.
+
+                // For now, let's just emit the event. `socketService` can handle getting the ID if needed, 
+                // or we can change the server to use `socket.id` if the payload is empty.
+
+                // Let's look at `socketService.ts` again. It has `this.socket.id`.
+                // I can add a getter for `socketId`.
+
+                socketService.sendGameEnded(socketService.socketId || '');
+            }
         }
     },
 

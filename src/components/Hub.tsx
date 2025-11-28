@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useProgressionStore } from '../store/progressionStore';
 import { Swords, Network, Trophy, User, Zap } from 'lucide-react';
@@ -13,7 +13,11 @@ interface HubProps {
 }
 
 const Hub: React.FC<HubProps> = ({ onNavigate, onBack }) => {
-    const { playerStats } = useProgressionStore();
+    const { playerStats, initialize } = useProgressionStore();
+
+    useEffect(() => {
+        initialize();
+    }, [initialize]);
 
     // Safety check for playerStats
     if (!playerStats) {
