@@ -43,6 +43,7 @@ Railway might try to auto-detect one service. You will need to add the other two
 - **Variables**:
     - `VITE_API_URL`: `https://<YOUR_BACKEND_URL>` (No trailing slash usually, or specific /api/v1 if code requires) -> Code appends `/api/v1` so provide root URL.
     - `VITE_SOCKET_URL`: `https://<YOUR_SOCKET_SERVER_URL>`
+    - **Note**: If running `npm run preview` in production, `vite.config.ts` has been updated to allow `gridlock.up.railway.app`. If you use a custom domain, add it to `allowedHosts` in `vite.config.ts`.
 
 ### 3. Linking Services
 1. Deploy **Backend** and **Socket Server** first.
