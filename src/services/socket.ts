@@ -5,7 +5,7 @@ type GameAction = any;
 
 class SocketService {
     private socket: Socket | null = null;
-    private serverUrl: string = 'http://localhost:3001';
+    private serverUrl: string = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3001';
 
     connect(): void {
         if (this.socket?.connected) return;
