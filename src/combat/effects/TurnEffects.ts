@@ -1,6 +1,6 @@
 import { Unit, CombatLogEvent } from '../types';
 import { getStatusDefinition } from './StatusRegistry';
-import { removeStatus, tickStatusDurations } from './StatusResolver';
+import { tickStatusDurations } from './StatusResolver';
 
 /**
  * Turn Effects System
@@ -28,7 +28,7 @@ export const processTurnStartEffects = (unit: Unit): TurnEffectResult => {
     const logs: CombatLogEvent[] = [];
 
     // Process onTurnStart triggers
-    unit.statuses.forEach(status => {
+    unit.statuses.forEach((status: any) => {
         const statusDef = getStatusDefinition(status.statusId);
         if (statusDef?.onTurnStart) {
             statusDef.onTurnStart(unit, status);
@@ -56,7 +56,7 @@ export const processTickEffects = (unit: Unit): TurnEffectResult => {
     const logs: CombatLogEvent[] = [];
 
     // Process each status
-    unit.statuses.forEach(status => {
+    unit.statuses.forEach((status: any) => {
         const statusDef = getStatusDefinition(status.statusId);
         if (!statusDef) return;
 
@@ -93,7 +93,7 @@ export const processTurnEndEffects = (unit: Unit): TurnEffectResult => {
     const logs: CombatLogEvent[] = [];
 
     // Process onTurnEnd triggers
-    unit.statuses.forEach(status => {
+    unit.statuses.forEach((status: any) => {
         const statusDef = getStatusDefinition(status.statusId);
         if (statusDef?.onTurnEnd) {
             statusDef.onTurnEnd(unit, status);
@@ -101,14 +101,14 @@ export const processTurnEndEffects = (unit: Unit): TurnEffectResult => {
     });
 
     // Get statuses before ticking
-    const statusesBefore = unit.statuses.map(s => ({ id: s.id, statusId: s.statusId }));
+    const statusesBefore = unit.statuses.map((s: any) => ({ id: s.id, statusId: s.statusId }));
 
     // Tick durations and remove expired
     tickStatusDurations(unit);
 
     // Log removed statuses
-    statusesBefore.forEach(before => {
-        if (!unit.statuses.find(s => s.id === before.id)) {
+    statusesBefore.forEach((before: any) => {
+        if (!unit.statuses.find((s: any) => s.id === before.id)) {
             logs.push({
                 type: 'status_remove',
                 timestamp: Date.now(),
@@ -138,7 +138,7 @@ export const processMoveEffects = (unit: Unit): TurnEffectResult => {
     const logs: CombatLogEvent[] = [];
 
     // Process onMove triggers
-    unit.statuses.forEach(status => {
+    unit.statuses.forEach((status: any) => {
         const statusDef = getStatusDefinition(status.statusId);
         if (statusDef?.onMove) {
             const oldHp = unit.stats.hp;
@@ -174,7 +174,7 @@ export const processHitEffects = (
     const logs: CombatLogEvent[] = [];
 
     // Process attacker's onHit triggers
-    attacker.statuses.forEach(status => {
+    attacker.statuses.forEach((status: any) => {
         const statusDef = getStatusDefinition(status.statusId);
         if (statusDef?.onHit) {
             statusDef.onHit(attacker, status, target);
@@ -182,7 +182,7 @@ export const processHitEffects = (
     });
 
     // Process target's onHit triggers (e.g., thorns, counter)
-    target.statuses.forEach(status => {
+    target.statuses.forEach((status: any) => {
         const statusDef = getStatusDefinition(status.statusId);
         if (statusDef?.onHit) {
             const oldHp = attacker.stats.hp;
@@ -250,7 +250,7 @@ export const calculateStatusEffectTotals = (unit: Unit): { damage: number; heali
     let totalDamage = 0;
     let totalHealing = 0;
 
-    unit.statuses.forEach(status => {
+    unit.statuses.forEach((status: any) => {
         const statusDef = getStatusDefinition(status.statusId);
         if (!statusDef) return;
 

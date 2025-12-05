@@ -1,4 +1,4 @@
-import { Unit, Skill } from '../types';
+import { Unit } from '../types';
 
 /**
  * Level-based stat scaling

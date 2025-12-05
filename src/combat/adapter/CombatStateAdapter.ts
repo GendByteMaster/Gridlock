@@ -105,7 +105,14 @@ export const toEngineUnit = (uiUnit: UIUnit): EngineUnit => {
         modules: [],
 
         // Runtime state
-        runtime
+        runtime,
+
+        // Compatibility fields for UI
+        position: uiUnit.position,
+        hp: hp,
+        maxHp: maxHp,
+        equippedSkills: uiUnit.equippedSkills || [],
+        cooldowns: uiUnit.cooldowns || {}
     };
 
     return engineUnit;
@@ -132,8 +139,19 @@ export const toUIUnit = (engineUnit: EngineUnit): UIUnit => {
         maxHp: engineUnit.stats.maxHp,
 
         // Skills
-        equippedSkills: [], // We'd need to map IDs back to SkillNodes, but for now empty or placeholder
-        cooldowns: engineUnit.runtime.cooldowns
+        equippedSkills: [],
+        cooldowns: engineUnit.runtime.cooldowns,
+
+        // Full Unit compatibility fields
+        level: engineUnit.level,
+        base: engineUnit.base,
+        stats: engineUnit.stats,
+        resistances: engineUnit.resistances,
+        pos: engineUnit.pos,
+        skills: engineUnit.skills,
+        modules: engineUnit.modules,
+        statuses: engineUnit.statuses,
+        runtime: engineUnit.runtime
     };
 
     return uiUnit;

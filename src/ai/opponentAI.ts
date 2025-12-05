@@ -1,6 +1,12 @@
-import { Unit, Position, GameState } from '../types';
+import { Unit, Position } from '../types';
 
 const BOARD_SIZE = 10;
+
+// Import ExtendedGameState from the store
+interface ExtendedGameState {
+    units: Unit[];
+    grid: any[][];
+}
 
 // Calculate Manhattan distance between two positions
 const distance = (a: Position, b: Position): number => {
@@ -55,7 +61,7 @@ const isAdjacent = (a: Position, b: Position): boolean => {
 };
 
 // Main AI decision function
-export const executeAITurn = (gameState: GameState): {
+export const executeAITurn = (gameState: ExtendedGameState): {
     action: 'move' | 'skill' | 'none';
     unitId?: string;
     target?: Position;
@@ -64,8 +70,8 @@ export const executeAITurn = (gameState: GameState): {
     const { units, grid } = gameState;
 
     // Get AI units and player units
-    const aiUnits = units.filter(u => u.owner === 'opponent');
-    const playerUnits = units.filter(u => u.owner === 'player');
+    const aiUnits = units.filter((u: Unit) => u.owner === 'opponent');
+    const playerUnits = units.filter((u: Unit) => u.owner === 'player');
 
     if (aiUnits.length === 0 || playerUnits.length === 0) {
         return { action: 'none' };
@@ -82,7 +88,7 @@ export const executeAITurn = (gameState: GameState): {
     // Check if enemy is adjacent (can attack)
     if (isAdjacent(selectedUnit.position, closestEnemy.position)) {
         // Use Slash skill
-        const slashSkill = selectedUnit.equippedSkills.find(s => s.id === 'slash');
+        const slashSkill = selectedUnit.equippedSkills.find((s: any) => s.id === 'slash');
         const cooldown = selectedUnit.cooldowns['slash'] || 0;
 
         if (slashSkill && cooldown === 0) {

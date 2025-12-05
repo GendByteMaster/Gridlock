@@ -39,7 +39,6 @@ export const calculateReduction = (
     // Apply reduction formula
     const reductionPercent = defenseValue / (defenseValue + 100);
     const mitigatedAmount = baseDamage * reductionPercent;
-    const reducedDamage = baseDamage - mitigatedAmount;
 
     // Cap reduction at 75% (no more than 75% damage reduction)
     const maxReduction = baseDamage * 0.75;

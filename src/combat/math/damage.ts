@@ -26,21 +26,7 @@ export const calculatePenetration = (baseDef: number, penetration: number): numb
  * Bonus damage against weak elements
  */
 export const calculateElementalAmplification = (damageType: DamageType, target: Unit): number => {
-    // Elemental weakness system
-    const weaknesses: Record<DamageType, DamageType[]> = {
-        fire: ['frost'],
-        frost: ['fire'],
-        lightning: ['void'],
-        poison: ['arcane'],
-        arcane: ['poison'],
-        void: ['lightning'],
-        physical: [],
-        magical: [],
-        true: []
-    };
-
-    // Check if target has high resistance to a type that this damage type is strong against
-    // For simplicity, we'll use a basic multiplier system
+    // Elemental weakness system (to be implemented)
     const baseAmplification = 1.0;
 
     // If target has low resistance to this element, amplify

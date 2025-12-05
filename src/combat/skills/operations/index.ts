@@ -11,7 +11,13 @@ import {
 } from '../../types';
 import { calculateDamage } from '../../math/damage';
 import { applyStatus, removeStatus } from '../../effects/StatusResolver';
-import { calculateDistance } from '../engine/ActionContext';
+
+// Local implementation of calculateDistance
+const calculateDistance = (pos1: CellPos, pos2: CellPos): number => {
+    const dx = pos1.x - pos2.x;
+    const dy = pos1.y - pos2.y;
+    return Math.sqrt(dx * dx + dy * dy);
+};
 
 /**
  * Operation Context
@@ -124,7 +130,7 @@ export const executeOp = (op: SkillOp, context: OpContext): void => {
 // MOVEMENT OPS
 // ============================================================================
 
-const executeMoveOp = (op: MoveOp, context: OpContext): void => {
+const executeMoveOp = (_op: MoveOp, context: OpContext): void => {
     const { source, position, log } = context;
     if (!position) return;
 
@@ -139,7 +145,7 @@ const executeMoveOp = (op: MoveOp, context: OpContext): void => {
     });
 };
 
-const executeDashOp = (op: DashOp, context: OpContext): void => {
+const executeDashOp = (_op: DashOp, context: OpContext): void => {
     const { source, position, log } = context;
     if (!position) return;
 
@@ -154,7 +160,7 @@ const executeDashOp = (op: DashOp, context: OpContext): void => {
     });
 };
 
-const executeTeleportOp = (op: TeleportOp, context: OpContext): void => {
+const executeTeleportOp = (_op: TeleportOp, context: OpContext): void => {
     const { source, position, log } = context;
     if (!position) return;
 
@@ -389,7 +395,7 @@ const executeCleanseOp = (op: CleanseOp, context: OpContext): void => {
     const { source, target, log } = context;
     if (!target) return;
 
-    const statusesToRemove = target.statuses.filter(s => {
+    const statusesToRemove = target.statuses.filter(_s => {
         if (!op.statusType) return true; // Remove all
         // Would need status definitions to check type
         return false; // Placeholder
@@ -523,7 +529,7 @@ const executeReviveOp = (op: ReviveOp, context: OpContext): void => {
 // ============================================================================
 
 const executePushOp = (op: PushOp, context: OpContext): void => {
-    const { source, target, grid, log } = context;
+    const { source, target, log } = context;
     if (!target) return;
 
     // Calculate push direction
@@ -574,7 +580,7 @@ const executePullOp = (op: PullOp, context: OpContext): void => {
     });
 };
 
-const executeSwapOp = (op: SwapOp, context: OpContext): void => {
+const executeSwapOp = (_op: SwapOp, context: OpContext): void => {
     const { source, target, log } = context;
     if (!target) return;
 

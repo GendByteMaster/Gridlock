@@ -1,6 +1,4 @@
 import {
-    MovementPattern,
-    MovementEffect,
     UnitMovementDef,
     calculateOrthogonalMoves,
     calculateDiagonalMoves,
@@ -594,7 +592,7 @@ export function calculateUnitMoves(
 }
 
 // Helper to check if a move target is valid (empty or passable)
-function isValidMove(target: Position, units: any[], grid: any[][], isTeleport = false): boolean {
+function isValidMove(target: Position, units: any[], grid: any[][], _isTeleport = false): boolean {
     if (target.x < 0 || target.x >= 10 || target.y < 0 || target.y >= 10) return false;
     // Check grid obstacles
     if (grid[target.y][target.x].type === 'obstacle') return false;

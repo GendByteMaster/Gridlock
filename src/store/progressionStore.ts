@@ -87,7 +87,7 @@ export const useProgressionStore = create<ProgressionState>()(
                 }
             },
 
-            addXP: async (amount: number) => {
+            addXP: async (_amount: number) => {
                 // Placeholder if needed, currently handled by addWin/addLoss
             },
 

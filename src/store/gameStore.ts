@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { GameState, Cell, Unit, Position, UnitType } from '../types';
+import { GameState, Cell, Unit, Position, UnitType, Move } from '../types';
 import { SKILLS } from '../data/skills';
 import { executeAITurn as executeAITurnLogic } from '../ai/opponentAI';
 import { calculateUnitMoves } from '../combat/movement/UnitMovementRegistry';
@@ -160,22 +160,43 @@ interface CombatLog {
 }
 
 interface ExtendedGameState extends GameState {
+    // Core game state
+    grid: Cell[][];
+    units: Unit[];
+    turn: 'player' | 'opponent';
+    selectedUnitId: string | null;
+    validMoves: Position[];
+    moveHistory: Move[];
+
+    // UI state
     cursor: Position;
+    targetingSkillId: string | null;
+
+    // Game status
     gameStatus: 'playing' | 'player_won' | 'opponent_won';
     gameStats: GameStats;
+
+    // Multiplayer
     isMultiplayer: boolean;
     localPlayer: 'player' | 'opponent';
     turnTimeRemaining: number;
     turnTimeLimit: number;
     turnOrder: string[];
     activeUnitId: string | null;
+
+    // Combat logs
     combatLogs: CombatLog[];
+
+    // Actions
+    initializeGame: () => void;
     moveCursor: (dx: number, dy: number) => void;
     setCursor: (pos: Position) => void;
+    selectUnit: (unitId: string) => void;
+    moveUnit: (unitId: string, target: Position) => void;
     executeSkill: (unitId: string, skillId: string, target: Position) => void;
-    targetingSkillId: string | null;
     setTargetingMode: (skillId: string | null) => void;
     executeAITurn: () => void;
+    endTurn: () => void;
     checkGameOver: () => void;
     resetGame: () => void;
     setMultiplayerMode: (isMultiplayer: boolean, localPlayer: 'player' | 'opponent') => void;

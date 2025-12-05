@@ -1,6 +1,6 @@
 export * from './primitives';
 import { Unit as CombatUnit } from '../combat/types';
-import { Position, UnitType, Player, Skill } from './primitives';
+import { Position, Player } from './primitives';
 
 // Re-export Unit from combat/types to unify the type system
 export type Unit = CombatUnit;
@@ -28,20 +28,6 @@ export interface Move {
 
 export interface GameState {
     setCursor: (pos: Position) => void;
-    moveHistory: Move[];
-
-    // Extended State (from gameStore)
-    gameStatus?: 'playing' | 'player_won' | 'opponent_won';
-    gameStats?: {
-        turns: number;
-        playerUnitsLost: number;
-        opponentUnitsLost: number;
-        playerKills: UnitType[];
-        opponentKills: UnitType[];
-    };
-    isMultiplayer?: boolean;
-    localPlayer?: 'player' | 'opponent';
-    turnTimeRemaining?: number;
     turnTimeLimit?: number;
     turnOrder?: string[];
     activeUnitId?: string | null;

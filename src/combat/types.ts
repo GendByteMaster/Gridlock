@@ -125,6 +125,7 @@ export interface TargetingInfo {
     range: number;
     radius?: number; // For AoE
     width?: number; // For line/cone
+    angle?: number; // For cone
     maxTargets?: number; // For chain
     requiresLineOfSight?: boolean;
     canTargetSelf?: boolean;
