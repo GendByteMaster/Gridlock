@@ -117,7 +117,7 @@ const SkillTree: React.FC<SkillTreeProps> = ({ onBack }) => {
     const visibleSkills = Object.keys(SKILL_POSITIONS).map(id => SKILLS[id]).filter(Boolean);
 
     return (
-        <div className="h-screen w-full flex flex-col bg-system-background relative overflow-hidden">
+        <div className="h-screen w-full flex flex-col relative overflow-hidden">
             {/* Background Ambient Glow - Enhanced */}
             <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-accent-blue/10 blur-[150px] rounded-full pointer-events-none animate-pulse-slow" />
             <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-accent-purple/10 blur-[150px] rounded-full pointer-events-none animate-pulse-slow" style={{ animationDelay: '2s' }} />

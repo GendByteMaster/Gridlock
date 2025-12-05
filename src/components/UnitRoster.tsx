@@ -83,7 +83,7 @@ const UnitRoster: React.FC<UnitRosterProps> = ({ onBack }) => {
     };
 
     return (
-        <div className="min-h-screen w-full bg-gradient-to-br from-system-gray1 via-system-gray2 to-system-gray1 overflow-y-auto">
+        <div className="min-h-screen w-full overflow-y-auto">
             {/* Header */}
             <div className="sticky top-0 z-50 bg-system-gray1/80 backdrop-blur-xl border-b border-white/10">
                 <div className="max-w-7xl mx-auto px-6 py-4">

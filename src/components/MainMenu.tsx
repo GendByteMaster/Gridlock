@@ -11,11 +11,6 @@ interface MainMenuProps {
 const MainMenu: React.FC<MainMenuProps> = ({ onPlay, onHowToPlay }) => {
     return (
         <div className="h-screen w-full flex items-center justify-center p-4 overflow-hidden relative">
-            {/* Background Effects */}
-            <div className="absolute inset-0 bg-system-background-primary">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(10,132,255,0.15)_0%,_transparent_50%)]" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,_rgba(94,92,230,0.15)_0%,_transparent_50%)]" />
-            </div>
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}

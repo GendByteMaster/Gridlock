@@ -82,7 +82,7 @@ const Lobby: React.FC<LobbyProps> = ({ onGameStart, onBack }) => {
     };
 
     return (
-        <div className="h-screen w-full flex items-center justify-center p-4 bg-gradient-to-br from-system-gray1 via-system-gray2 to-system-gray1 overflow-hidden relative">
+        <div className="h-screen w-full flex items-center justify-center p-4 overflow-hidden relative">
             {/* Background Elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-blue/10 rounded-full blur-3xl animate-pulse" />

@@ -66,7 +66,7 @@ const Hub: React.FC<HubProps> = ({ onNavigate, onBack }) => {
     ];
 
     return (
-        <div className="h-screen w-full flex flex-col bg-system-background-primary">
+        <div className="h-screen w-full flex flex-col">
             <TopBar
                 onBack={onBack}
                 backLabel="Back"
